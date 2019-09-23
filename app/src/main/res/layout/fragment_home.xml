@@ -16,8 +16,10 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
+        android:autoText="false"
+        android:text="@string/home_welcome_text"
         android:textAlignment="center"
-        android:textSize="20sp" />
+        android:textSize="14sp" />
 
     <Button
         android:id="@+id/connect_button"
@@ -27,12 +29,37 @@
         android:text="@string/connect_button" />
 
     <TextView
-        android:id="@+id/log_home"
+        android:id="@+id/ip_text_home"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
+        android:text="@string/home_ip_text"
         android:textAlignment="center"
-        android:textSize="20sp" />
+        android:textSize="14sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/ip_address"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="8dp"
+            android:inputType="textUri"
+            android:text="@string/default_ip"
+            android:textAlignment="center" />
+
+        <Button
+            android:id="@+id/button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Button" />
+    </LinearLayout>
 </LinearLayout>

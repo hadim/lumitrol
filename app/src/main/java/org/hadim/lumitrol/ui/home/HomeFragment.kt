@@ -16,20 +16,14 @@ import org.hadim.lumitrol.network.SSDPDiscovery
 
 class HomeFragment : Fragment() {
 
-    private lateinit var homeViewModel: HomeViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        homeViewModel =
-            ViewModelProviders.of(this).get(HomeViewModel::class.java)
+
         val root = inflater.inflate(org.hadim.lumitrol.R.layout.fragment_home, container, false)
-        val textView: TextView = root.findViewById(org.hadim.lumitrol.R.id.text_home)
-        homeViewModel.text.observe(this, Observer {
-            textView.text = it
-        })
 
         val connectButton: Button =
             root.findViewById(org.hadim.lumitrol.R.id.connect_button) as Button

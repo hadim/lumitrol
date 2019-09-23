@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Lumitrol</string>
+
+    <string name="nav_header_title">Lumitrol</string>
+    <string name="nav_header_desc">Navigation header</string>
+
+    <string name="menu_home">Home</string>
+    <string name="menu_control">Control</string>
+    <string name="menu_gallery">Gallery</string>
+</resources>

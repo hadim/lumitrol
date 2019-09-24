@@ -10,8 +10,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import com.google.common.net.InetAddresses
 import io.resourcepool.ssdp.client.SsdpClient
 import io.resourcepool.ssdp.model.DiscoveryListener
@@ -21,57 +21,83 @@ import io.resourcepool.ssdp.model.SsdpServiceAnnouncement
 import org.hadim.lumitrol.model.CameraStateModel
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
-import java.util.concurrent.Future
 
 class HomeFragment : Fragment() {
 
-    private lateinit var cameraStateModel: CameraStateModel
+    private val cameraStateModel: CameraStateModel by activityViewModels()
 
     private lateinit var connectionStatusIPTextView: TextView
     private lateinit var connectionStatusIPIcon: ImageView
-    private lateinit var connectionStatusProgressBar: ProgressBar
+    private lateinit var connectionStatusIPProgressBar: ProgressBar
+
+    private lateinit var connectionStatusCameraTextView: TextView
+    private lateinit var connectionStatusCameraIcon: ImageView
+    private lateinit var connectionStatusCameraProgressBar: ProgressBar
 
     private var defaultIPAddressTextColor: Int = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-//        val factory = SavedStateViewModelFactory(this.context)
-//        cameraStateModel = ViewModelProviders.of(this, factory).get(CameraStateModel::class.java)
+        cameraStateModel.ipAddress.observe(this, Observer { newIPAddress ->
+            connectionStatusIPTextView.setText(newIPAddress)
 
-        cameraStateModel = ViewModelProvider(this).get(CameraStateModel::class.java)
+            connectionStatusIPProgressBar.visibility = View.VISIBLE
+            connectionStatusIPIcon.visibility = View.GONE
 
-        val ipAddressObserver = Observer<String> { newIPAddress ->
-            if (connectionStatusIPTextView != null) {
-                connectionStatusIPTextView.setText(newIPAddress)
+            cameraStateModel.isIReachable.value = false
+            cameraStateModel.isCameraDetected.value = false
+
+            doAsync {
+
+                var isReachable = InetAddresses.forString(newIPAddress).isReachable(2000)
+                cameraStateModel.isIReachable.postValue(isReachable)
+
+                uiThread {
+                    connectionStatusIPProgressBar.visibility = View.GONE
+                    connectionStatusIPIcon.visibility = View.VISIBLE
+                }
             }
 
-            if (connectionStatusIPIcon != null) {
+        })
 
-                connectionStatusIPIcon.setImageResource(android.R.drawable.presence_busy)
-                connectionStatusProgressBar.visibility = View.VISIBLE
-                connectionStatusIPIcon.visibility = View.GONE
+        cameraStateModel.isIReachable.observe(this, Observer { isReachable ->
+            if (isReachable) {
+                connectionStatusIPIcon.setImageResource(android.R.drawable.presence_online)
+
+                connectionStatusCameraProgressBar.visibility = View.VISIBLE
+                connectionStatusCameraIcon.visibility = View.GONE
+                connectionStatusCameraTextView.text = "None"
 
                 doAsync {
+                    Log.d("HOME/isReachable", "check for camera at the IP address")
 
-                    var isReachable = InetAddresses.forString(newIPAddress).isReachable(2000)
+                    Thread.sleep(2000)
+
+                    var isCameraDetected = true
+                    cameraStateModel.isCameraDetected.postValue(isCameraDetected)
 
                     uiThread {
-                        connectionStatusProgressBar.visibility = View.GONE
-                        connectionStatusIPIcon.visibility = View.VISIBLE
-
-                        if (isReachable) {
-                            connectionStatusIPIcon.setImageResource(android.R.drawable.presence_online)
-                        } else {
-                            connectionStatusIPIcon.setImageResource(android.R.drawable.presence_busy)
-                        }
+                        connectionStatusCameraProgressBar.visibility = View.GONE
+                        connectionStatusCameraIcon.visibility = View.VISIBLE
                     }
                 }
 
+            } else {
+                connectionStatusIPIcon.setImageResource(android.R.drawable.presence_busy)
             }
+        })
 
-        }
-        cameraStateModel.ipAddress.observe(this, ipAddressObserver)
+        cameraStateModel.isCameraDetected.observe(this, Observer { isCameraDetected ->
+            if (isCameraDetected) {
+                connectionStatusCameraIcon.setImageResource(android.R.drawable.presence_online)
+                connectionStatusCameraTextView.text = "OK"
+
+            } else {
+                connectionStatusCameraIcon.setImageResource(android.R.drawable.presence_busy)
+                connectionStatusCameraTextView.text = "None"
+            }
+        })
     }
 
 
@@ -81,6 +107,12 @@ class HomeFragment : Fragment() {
 
         // Set some class attributes.
         connectionStatusIPTextView = root.findViewById(org.hadim.lumitrol.R.id.connection_status_ip_text) as TextView
+        connectionStatusIPIcon = root.findViewById(org.hadim.lumitrol.R.id.connection_status_ip_icon) as ImageView
+        connectionStatusIPProgressBar = root.findViewById(org.hadim.lumitrol.R.id.connection_status_ip_progress_bar) as ProgressBar
+
+        connectionStatusCameraTextView = root.findViewById(org.hadim.lumitrol.R.id.connection_status_camera_text) as TextView
+        connectionStatusCameraIcon = root.findViewById(org.hadim.lumitrol.R.id.connection_status_camera_icon) as ImageView
+        connectionStatusCameraProgressBar = root.findViewById(org.hadim.lumitrol.R.id.connection_status_camera_progress_bar) as ProgressBar
 
         // Enable button for automatic connection
         val connectButton: Button = root.findViewById(org.hadim.lumitrol.R.id.connect_button) as Button
@@ -112,9 +144,6 @@ class HomeFragment : Fragment() {
         val ipAddressField: EditText = root.findViewById(org.hadim.lumitrol.R.id.ip_address_field) as EditText
         defaultIPAddressTextColor = ipAddressField.textColors.defaultColor
 
-        connectionStatusIPIcon = root.findViewById(org.hadim.lumitrol.R.id.connection_status_ip_icon) as ImageView
-        connectionStatusProgressBar = root.findViewById(org.hadim.lumitrol.R.id.connection_status_progress_bar) as ProgressBar
-
         ipAddressField.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 validateManualIPAddress(root)
@@ -124,12 +153,18 @@ class HomeFragment : Fragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
 
+        // Restore manual IP
+        if (cameraStateModel.ipAddress.value != null && cameraStateModel.isIPManual.value!!) {
+            ipAddressField.setText(cameraStateModel.ipAddress.value)
+        }
+
         // Enable button for manual connection
         val manuaConnectButton: Button = root.findViewById(org.hadim.lumitrol.R.id.manual_connect_button) as Button
         manuaConnectButton.setOnClickListener(View.OnClickListener {
             var address: String? = validateManualIPAddress(root)
             if (address != null) {
                 cameraStateModel.ipAddress.value = address
+                cameraStateModel.isIPManual.value = true
             }
         })
 

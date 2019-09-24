@@ -12,6 +12,13 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import android.widget.Button
 import org.hadim.lumitrol.network.SSDPDiscovery
+import io.resourcepool.ssdp.model.DiscoveryListener
+import io.resourcepool.ssdp.client.SsdpClient
+import io.resourcepool.ssdp.model.SsdpRequest
+import io.resourcepool.ssdp.model.SsdpService
+import io.resourcepool.ssdp.model.SsdpServiceAnnouncement
+import io.resourcepool.ssdp.model.DiscoveryRequest
+import java.lang.Exception
 
 
 class HomeFragment : Fragment() {
@@ -34,16 +41,36 @@ class HomeFragment : Fragment() {
             val serviceName = "urn:schemas-upnp-org:service:ContentDirectory:1"
             val context: Context = activity as Context
 
-            cameraDiscoverer.execute(serviceName, context)
-            try {
-                Thread.sleep(1500)
-                var addresses = cameraDiscoverer.addresses
-                Log.d("HOME", addresses.toList().toString())
+            val client = SsdpClient.create()
+            val all = SsdpRequest.discoverAll()
+            client.discoverServices(all, object : DiscoveryListener {
+                override fun onServiceDiscovered(service: SsdpService) {
+                    Log.d("HOME", "Found service: $service")
+                }
 
-            } catch (e: Exception) {
-                Log.d("HOME", "Discovery failed.")
-                e.printStackTrace()
-            }
+                override fun onServiceAnnouncement(announcement: SsdpServiceAnnouncement) {
+                    Log.d("HOME", "Service announced something: $announcement")
+                }
+
+                override fun onFailed(ex: Exception?) {
+                    Log.d("HOME", "FAILEDDDDD")
+                }
+            })
+
+            Log.d("HOME", "DONE")
+
+
+//            var addresses = cameraDiscoverer.execute(serviceName, context)
+            //Log.d("HOME", addresses.toList().toString())
+//            try {
+//                Thread.sleep(1500)
+//                var addresses = cameraDiscoverer.addresses
+//                Log.d("HOME", addresses.toList().toString())
+//
+//            } catch (e: Exception) {
+//                Log.d("HOME", "Discovery failed.")
+//                e.printStackTrace()
+//            }
 
 
         })

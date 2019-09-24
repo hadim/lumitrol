@@ -17,7 +17,7 @@
         android:layout_height="48dp"
         android:contentDescription="@string/nav_header_desc"
         android:paddingTop="0dp"
-        app:srcCompat="@drawable/ic_icon_lumitrol" />
+        app:srcCompat="@drawable/ic_lumitrol" />
 
     <TextView
         android:layout_width="match_parent"

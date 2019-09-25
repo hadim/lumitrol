@@ -6,6 +6,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import org.hadim.lumitrol.network.CameraRequest
 import org.jsoup.Jsoup
+import java.util.*
 
 class CameraStateModel(state: SavedStateHandle) : ViewModel() {
 
@@ -34,9 +35,12 @@ class CameraStateModel(state: SavedStateHandle) : ViewModel() {
 
     lateinit var cameraRequest: CameraRequest
 
+    private var aliveTimer: Timer = Timer()
+    private var aliveTimerRunning: Boolean = false
+
     fun parseInfo(info: String): Boolean {
 
-        Log.d("HOME/cameraDetection", info)
+        Log.d("CameraStateModel/parseInfo", info)
 
         val doc = Jsoup.parse(info)
         val modelNameValue = doc.select("camrply productinfo modelName").text()
@@ -49,4 +53,71 @@ class CameraStateModel(state: SavedStateHandle) : ViewModel() {
 
         return true
     }
+
+    fun isValid(info: String): Boolean {
+        val doc = Jsoup.parse(info)
+        val modelNameValue = doc.select("camrply productinfo modelName").text()
+
+        if (modelNameValue == null) {
+            return false
+        }
+        return true
+    }
+
+    fun checkAlive(isAliveCallback: ((Boolean) -> Unit)?) {
+
+        if (::cameraRequest.isInitialized) {
+
+            val period: Long = 1000  // ms
+
+            cancelCheckAlive()
+            aliveTimerRunning = true
+
+            aliveTimer = Timer()
+            aliveTimer.schedule(object : TimerTask() {
+                override fun run() {
+
+                    cameraRequest.getInfo(
+                        onSuccess = { response: String ->
+
+                            val isValidResponse = isValid(response)
+                            if (!isValidResponse) {
+                                Log.e("CameraStateModel/checkAlive", "Can't parse the camera response.")
+                                Log.e("CameraStateModel/checkAlive", "Response:")
+                                Log.e("CameraStateModel/checkAlive", response)
+                            }
+
+                            Log.d("CameraStateModel/checkAlive", "Connection alive: $isValidResponse")
+                            if (isAliveCallback != null) {
+                                isAliveCallback(isValidResponse)
+                            }
+                        },
+                        onFailure = { t: Throwable? ->
+                            Log.e("CameraStateModel/checkAlive", "Camera detection failed.")
+
+                            if (t != null && t.message != null) {
+                                Log.e("CameraStateModel/checkAlive", t.message as String)
+                            }
+
+                            val isValidResponse = false
+                            Log.d("CameraStateModel/checkAlive", "Connection alive: $isValidResponse")
+                            if (isAliveCallback != null) {
+                                isAliveCallback(isValidResponse)
+                            }
+                        })
+
+
+                }
+            }, 0, period)
+        }
+    }
+
+    fun cancelCheckAlive() {
+        if (aliveTimerRunning) {
+            aliveTimerRunning = false
+            aliveTimer.cancel()
+            aliveTimer.purge()
+        }
+    }
+
 }

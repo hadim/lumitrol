@@ -2,10 +2,6 @@ package org.hadim.lumitrol.ui
 
 import android.content.Context
 import android.graphics.Color
-import android.net.ConnectivityManager
-import android.net.Network
-import android.net.NetworkCapabilities
-import android.net.wifi.WifiManager
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -27,9 +23,6 @@ import org.hadim.lumitrol.model.CameraStateModel
 import org.hadim.lumitrol.network.CameraRequest
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
-import android.net.NetworkRequest
-
-
 
 
 class HomeFragment : Fragment() {
@@ -67,29 +60,32 @@ class HomeFragment : Fragment() {
 
         cameraStateModel.ipAddress.observe(this, Observer { newIPAddress ->
 
-            connectionStatusIPTextView.text = newIPAddress
-
-            connectionStatusIPProgressBar.visibility = View.VISIBLE
-            connectionStatusIPIcon.visibility = View.GONE
-
-            cameraStateModel.isIReachable.value = false
-            cameraStateModel.isCameraDetected.value = false
-
             if (cameraStateModel.isWifiEnabled.value == true) {
 
-                doAsync {
+                connectionStatusIPTextView.text = newIPAddress
 
-                    var isReachable = InetAddresses.forString(newIPAddress).isReachable(2000)
-                    cameraStateModel.isIReachable.postValue(isReachable)
+                connectionStatusIPProgressBar.visibility = View.VISIBLE
+                connectionStatusIPIcon.visibility = View.GONE
 
-                    uiThread {
-                        connectionStatusIPProgressBar.visibility = View.GONE
-                        connectionStatusIPIcon.visibility = View.VISIBLE
+                cameraStateModel.isIReachable.value = false
+                cameraStateModel.isCameraDetected.value = false
+
+                if (cameraStateModel.isWifiEnabled.value == true) {
+
+                    doAsync {
+
+                        var isReachable = InetAddresses.forString(newIPAddress).isReachable(2000)
+                        cameraStateModel.isIReachable.postValue(isReachable)
+
+                        uiThread {
+                            connectionStatusIPProgressBar.visibility = View.GONE
+                            connectionStatusIPIcon.visibility = View.VISIBLE
+                        }
                     }
+                } else {
+                    connectionStatusIPProgressBar.visibility = View.GONE
+                    connectionStatusIPIcon.visibility = View.VISIBLE
                 }
-            } else {
-                connectionStatusIPProgressBar.visibility = View.GONE
-                connectionStatusIPIcon.visibility = View.VISIBLE
             }
 
         })
@@ -112,22 +108,20 @@ class HomeFragment : Fragment() {
                 cameraStateModel.cameraRequest.getInfo(
                     onSuccess = { response: String ->
 
-                        val isValid = cameraStateModel.parseInfo((response))
-
+                        val isValid = cameraStateModel.parseInfo(response)
 
                         if (isValid == true) {
 
-                            Log.i("HOME/cameraDetection", "Connection with the camera established.")
+                            Log.i("HomeFragment/cameraDetection", "Connection with the camera established.")
                             cameraStateModel.isCameraDetected.postValue(true)
                             connectionStatusCameraProgressBar.visibility = View.GONE
                             connectionStatusCameraIcon.visibility = View.VISIBLE
 
-
                         } else {
 
-                            Log.e("HOME/cameraDetection", "Can't parse the camera response.")
-                            Log.e("HOME/cameraDetection", "Response:")
-                            Log.e("HOME/cameraDetection", response)
+                            Log.e("HomeFragment/cameraDetection", "Can't parse the camera response.")
+                            Log.e("HomeFragment/cameraDetection", "Response:")
+                            Log.e("HomeFragment/cameraDetection", response)
 
                             cameraStateModel.isCameraDetected.postValue(false)
                             connectionStatusCameraProgressBar.visibility = View.GONE
@@ -135,10 +129,10 @@ class HomeFragment : Fragment() {
                         }
                     },
                     onFailure = { t: Throwable? ->
-                        Log.e("HOME/cameraDetection", "Camera detection failed.")
+                        Log.e("HomeFragment/cameraDetection", "Camera detection failed.")
 
                         if (t != null && t.message != null) {
-                            Log.e("HOME/cameraDetection", t.message as String)
+                            Log.e("HomeFragment/cameraDetection", t.message as String)
                         }
 
                         cameraStateModel.isCameraDetected.postValue(false)

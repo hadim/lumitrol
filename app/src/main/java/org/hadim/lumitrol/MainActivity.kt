@@ -15,6 +15,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateViewModelFactory
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -50,6 +51,34 @@ class MainActivity : AppCompatActivity() {
 
         registerWifiChangeCallback()
         checkWifi()
+
+        cameraStateModel.isWifiEnabled.observe(this, Observer { isWifiEnabled ->
+            if (!isWifiEnabled) {
+                cameraStateModel.ipAddress.value = "None"
+            }
+        })
+
+        cameraStateModel.ipAddress.observe(this, Observer { ipAddress ->
+            if (ipAddress == "None") {
+                cameraStateModel.isIReachable.value = false
+            }
+        })
+
+        cameraStateModel.isIReachable.observe(this, Observer { isIReachable ->
+            if (!isIReachable) {
+                cameraStateModel.isCameraDetected.value = false
+            }
+        })
+
+        cameraStateModel.isCameraDetected.observe(this, Observer { isCameraDetected ->
+            if (isCameraDetected) {
+                // TODO: update cameraStateModel
+                cameraStateModel.checkAlive(null)
+            } else {
+                cameraStateModel.cancelCheckAlive()
+            }
+        })
+
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -69,7 +98,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun enableNetworkOnWifi(){
+    private fun enableNetworkOnWifi() {
         val mConnectivityManager = applicationContext?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val request = NetworkRequest.Builder()
         request.addTransportType(NetworkCapabilities.TRANSPORT_WIFI)

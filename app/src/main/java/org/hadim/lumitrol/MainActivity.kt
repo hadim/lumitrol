@@ -72,13 +72,18 @@ class MainActivity : AppCompatActivity() {
 
         cameraStateModel.isCameraDetected.observe(this, Observer { isCameraDetected ->
             if (isCameraDetected) {
-                // TODO: update cameraStateModel
-                cameraStateModel.checkAlive(null)
+                cameraStateModel.checkAlive(isAliveCallback = { isAlive ->
+                    if (!isAlive) {
+                        cameraStateModel.ipAddress.value = cameraStateModel.ipAddress.value
+                        cameraStateModel.isIReachable.value = false
+                        cameraStateModel.isCameraDetected.value = false
+                        navController.navigate(R.id.nav_home)
+                    }
+                })
             } else {
                 cameraStateModel.cancelCheckAlive()
             }
         })
-
     }
 
     override fun onSupportNavigateUp(): Boolean {

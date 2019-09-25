@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
-import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -16,18 +15,28 @@ import org.hadim.lumitrol.util.forEachChildView
 class ControlFragment : Fragment() {
 
     private val cameraStateModel: CameraStateModel by activityViewModels()
+    private lateinit var rootLayout: View
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-
-        val root = inflater.inflate(org.hadim.lumitrol.R.layout.fragment_control, container, false)
+        rootLayout = inflater.inflate(org.hadim.lumitrol.R.layout.fragment_control, container, false)
 
         if (cameraStateModel.isCameraDetected.value == true) {
-            enableFragment(root)
+            enableFragment()
+            initFragment()
         } else {
-            disableFragment(root)
+            disableFragment()
         }
 
-        return root
+        cameraStateModel.isCameraDetected.observe(this, Observer { isCameraDetected ->
+            if (isCameraDetected) {
+                enableFragment()
+                initFragment()
+            } else {
+                disableFragment()
+            }
+        })
+
+        return rootLayout
     }
 
     override fun onDestroyView() {
@@ -40,27 +49,27 @@ class ControlFragment : Fragment() {
         }
     }
 
-    private fun disableFragment(root: View) {
-        val rootLayout = root.findViewById(org.hadim.lumitrol.R.id.control_root) as LinearLayout
+    private fun disableFragment() {
         rootLayout.forEachChildView { it.isEnabled = false }
     }
 
-    private fun enableFragment(root: View) {
-        val rootLayout = root.findViewById(org.hadim.lumitrol.R.id.control_root) as LinearLayout
+    private fun enableFragment() {
         rootLayout.forEachChildView { it.isEnabled = true }
+    }
 
+    private fun initFragment() {
         cameraStateModel.isRecording.value = false
 
         // Enable recMode
         cameraStateModel.cameraRequest.recMode(null, null)
 
         // Handle callbacks for buttons.
-        val captureButton: ImageButton = root.findViewById(org.hadim.lumitrol.R.id.control_capture_button) as ImageButton
+        val captureButton: ImageButton = rootLayout.findViewById(org.hadim.lumitrol.R.id.control_capture_button) as ImageButton
         captureButton.setOnClickListener(View.OnClickListener {
             cameraStateModel.cameraRequest.capture(null, null)
         })
 
-        val recordButton: ImageButton = root.findViewById(org.hadim.lumitrol.R.id.control_record_button) as ImageButton
+        val recordButton: ImageButton = rootLayout.findViewById(org.hadim.lumitrol.R.id.control_record_button) as ImageButton
         recordButton.setOnClickListener(View.OnClickListener {
             if (cameraStateModel.isRecording.value == false) {
                 cameraStateModel.cameraRequest.startRecord(null, null)
@@ -76,7 +85,7 @@ class ControlFragment : Fragment() {
 
         cameraStateModel.isRecording.observe(this, Observer { isRecording ->
 
-            val recordButton: ImageButton = root.findViewById(R.id.control_record_button) as ImageButton
+            val recordButton: ImageButton = rootLayout.findViewById(R.id.control_record_button) as ImageButton
             if (cameraStateModel.isRecording.value == false) {
                 recordButton.setImageResource(R.drawable.ic_videocam_black_24dp)
             } else {

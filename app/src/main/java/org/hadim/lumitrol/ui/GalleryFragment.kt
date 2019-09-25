@@ -4,38 +4,58 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import org.hadim.lumitrol.model.CameraStateModel
 import org.hadim.lumitrol.util.forEachChildView
 
 class GalleryFragment : Fragment() {
 
     private val cameraStateModel: CameraStateModel by activityViewModels()
+    private lateinit var rootLayout: View
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-
-        val root = inflater.inflate(org.hadim.lumitrol.R.layout.fragment_gallery, container, false)
+        rootLayout = inflater.inflate(org.hadim.lumitrol.R.layout.fragment_gallery, container, false)
 
         if (cameraStateModel.isCameraDetected.value == true) {
-            enableFragment(root)
+            enableFragment()
+            initFragment()
         } else {
-            disableFragment(root)
+            disableFragment()
         }
 
-        return root
+        cameraStateModel.isCameraDetected.observe(this, Observer { isCameraDetected ->
+            if (isCameraDetected) {
+                enableFragment()
+                initFragment()
+            } else {
+                disableFragment()
+            }
+        })
+
+        return rootLayout
     }
 
-    private fun disableFragment(root: View) {
-        val rootLayout = root.findViewById(org.hadim.lumitrol.R.id.gallery_root) as LinearLayout
+    override fun onDestroyView() {
+        super.onDestroyView()
+        if (cameraStateModel.isCameraDetected.value == true) {
+            if (cameraStateModel.isRecording.value == true) {
+                cameraStateModel.cameraRequest.stopRecord(null, null)
+                cameraStateModel.isRecording.value = false
+            }
+        }
+    }
+
+    private fun disableFragment() {
         rootLayout.forEachChildView { it.isEnabled = false }
     }
 
-    private fun enableFragment(root: View) {
-        val rootLayout = root.findViewById(org.hadim.lumitrol.R.id.gallery_root) as LinearLayout
+    private fun enableFragment() {
         rootLayout.forEachChildView { it.isEnabled = true }
+    }
 
+    private fun initFragment() {
         // Enable playMode
         cameraStateModel.cameraRequest.playMode(null, null)
     }

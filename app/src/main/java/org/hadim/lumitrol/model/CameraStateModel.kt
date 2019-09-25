@@ -68,7 +68,7 @@ class CameraStateModel(state: SavedStateHandle) : ViewModel() {
 
         if (::cameraRequest.isInitialized) {
 
-            val period: Long = 1000  // ms
+            val period: Long = 2000  // ms
 
             cancelCheckAlive()
             aliveTimerRunning = true

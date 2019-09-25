@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="1024mm"
+   height="500mm"
+   viewBox="0 0 1024 500"
+   version="1.1"
+   id="svg8"
+   inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
+   sodipodi:docname="feature.svg"
+   inkscape:export-filename="/home/hadim/Documents/Code/Misc/lumitrol/icons/feature.png"
+   inkscape:export-xdpi="25.4"
+   inkscape:export-ydpi="25.4">
+  <defs
+     id="defs2" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="1"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.24748737"
+     inkscape:cx="1747.42"
+     inkscape:cy="733.23212"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1863"
+     inkscape:window-height="1021"
+     inkscape:window-x="362"
+     inkscape:window-y="226"
+     inkscape:window-maximized="0"
+     inkscape:showpageshadow="false" />
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,203)">
+    <path
+       style="fill:#000000;stroke-width:0.57314372"
+       inkscape:connector-curvature="0"
+       d="m 507.45448,-47.576015 c 0,-2.579138 -2.00601,-4.585152 -4.58515,-4.585152 -12.60917,0 -22.92576,10.316593 -22.92576,22.925745 0,2.579158 2.00601,4.585152 4.58515,4.585152 2.57916,0 4.58515,-2.005994 4.58515,-4.585152 0,-7.594158 6.16131,-13.755441 13.75546,-13.755441 2.57914,0 4.58515,-2.006014 4.58515,-4.585152 z m 32.09605,18.627175 c 0,20.2033224 -16.4779,36.6811974 -36.6812,36.6811974 -20.20332,0 -36.6812,-16.477875 -36.6812,-36.6811974 0,-20.203326 16.47788,-36.681201 36.6812,-36.681201 20.2033,0 36.6812,16.477875 36.6812,36.681201 z M 392.82572,53.297288 h 220.08722 v -18.3406 H 392.82572 Z M 557.89114,-28.94884 c 0,-30.376638 -24.6452,-55.02181 -55.02181,-55.02181 -30.37663,0 -55.02181,24.645172 -55.02181,55.02181 0,30.3766134 24.64518,55.021806 55.02181,55.021806 30.37661,0 55.02181,-24.6451926 55.02181,-55.021806 z m -146.72481,-91.98958 h 55.0218 v -18.34059 h -55.0218 z m -18.34061,27.510905 H 612.91294 V -130.10871 H 494.27217 l -9.1703,18.34059 H 392.82572 Z M 631.25353,-130.10871 V 53.297288 c 0,10.173304 -8.1673,18.340606 -18.34059,18.340606 H 392.82572 c -10.17329,0 -18.34059,-8.167302 -18.34059,-18.340606 V -130.10871 c 0,-10.17331 8.1673,-18.3406 18.34059,-18.3406 h 220.08722 c 10.17329,0 18.34059,8.16729 18.34059,18.3406 z"
+       id="path" />
+    <text
+       xml:space="preserve"
+       style="color:#000000;font-size:2.46944427px;line-height:100%;font-family:arial;-inkscape-font-specification:arial;text-align:center;text-decoration:none;text-decoration-line:none;text-decoration-color:#000000;letter-spacing:0px;word-spacing:0px;text-anchor:middle;overflow:visible;opacity:1;vector-effect:none;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.13229166;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
+       x="502.35257"
+       y="160.91307"
+       id="text823"><tspan
+         sodipodi:role="line"
+         id="tspan821"
+         x="502.35257"
+         y="160.91307"
+         style="font-size:70.55555725px;fill:#000000;fill-opacity:1;stroke-width:0.13229166">Lumitrol</tspan></text>
+    <text
+       id="text846"
+       y="220.20213"
+       x="502.15964"
+       style="color:#000000;font-size:49.38888931px;line-height:100%;font-family:arial;-inkscape-font-specification:arial;text-align:center;text-decoration:none;text-decoration-line:none;text-decoration-color:#000000;letter-spacing:0px;word-spacing:0px;text-anchor:middle;overflow:visible;opacity:1;vector-effect:none;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.13229166;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
+       xml:space="preserve"><tspan
+         style="font-size:28.22222137px;fill:#000000;fill-opacity:1;stroke-width:0.13229166"
+         y="220.20213"
+         x="502.15964"
+         id="tspan844"
+         sodipodi:role="line">Control your Panasonic Lumix Camera</tspan></text>
+  </g>
+</svg>

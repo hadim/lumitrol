@@ -1,5 +1,6 @@
 package org.hadim.lumitrol.ui.home
 
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
@@ -19,8 +20,11 @@ import io.resourcepool.ssdp.model.SsdpRequest
 import io.resourcepool.ssdp.model.SsdpService
 import io.resourcepool.ssdp.model.SsdpServiceAnnouncement
 import org.hadim.lumitrol.model.CameraStateModel
+import org.hadim.lumitrol.network.CameraRequest
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
+import org.jsoup.Jsoup
+
 
 class HomeFragment : Fragment() {
 
@@ -33,6 +37,8 @@ class HomeFragment : Fragment() {
     private lateinit var connectionStatusCameraTextView: TextView
     private lateinit var connectionStatusCameraIcon: ImageView
     private lateinit var connectionStatusCameraProgressBar: ProgressBar
+
+    private lateinit var connectionStatusModelNameTextView: TextView
 
     private var defaultIPAddressTextColor: Int = -1
 
@@ -68,20 +74,47 @@ class HomeFragment : Fragment() {
                 connectionStatusCameraProgressBar.visibility = View.VISIBLE
                 connectionStatusCameraIcon.visibility = View.GONE
                 connectionStatusCameraTextView.text = "None"
+                connectionStatusModelNameTextView.text = "None"
 
-                doAsync {
-                    Log.d("HOME/isReachable", "check for camera at the IP address")
+                val ipAddress = cameraStateModel.ipAddress.value as String
+                cameraStateModel.cameraRequest = CameraRequest(ipAddress, this.context as Context)
 
-                    Thread.sleep(2000)
+                cameraStateModel.cameraRequest.getInfo(
+                    onSuccess = { response: String ->
 
-                    var isCameraDetected = true
-                    cameraStateModel.isCameraDetected.postValue(isCameraDetected)
+                        val doc = Jsoup.parse(response)
+                        val modelName = doc.select("camrply productinfo modelName").text()
 
-                    uiThread {
+                        if (modelName != null) {
+
+                            Log.i("HOME/cameraDetection", "Connection with the camera established.")
+                            cameraStateModel.isCameraDetected.postValue(true)
+                            connectionStatusCameraProgressBar.visibility = View.GONE
+                            connectionStatusCameraIcon.visibility = View.VISIBLE
+                            connectionStatusModelNameTextView.text = modelName
+                        } else {
+
+                            Log.e("HOME/cameraDetection", "Can't parse the camera response.")
+                            Log.e("HOME/cameraDetection", "Response:")
+                            Log.e("HOME/cameraDetection", response)
+
+                            cameraStateModel.isCameraDetected.postValue(false)
+                            connectionStatusCameraProgressBar.visibility = View.GONE
+                            connectionStatusCameraIcon.visibility = View.VISIBLE
+                        }
+                    },
+                    onFailure = { t: Throwable? ->
+                        Log.e("HOME/cameraDetection", "Camera detection failed.")
+
+                        if (t != null && t.message != null) {
+                            Log.e("HOME/cameraDetection", t.message as String)
+                        }
+
+                        cameraStateModel.isCameraDetected.postValue(false)
                         connectionStatusCameraProgressBar.visibility = View.GONE
                         connectionStatusCameraIcon.visibility = View.VISIBLE
-                    }
-                }
+                    })
+
 
             } else {
                 connectionStatusIPIcon.setImageResource(android.R.drawable.presence_busy)
@@ -92,10 +125,12 @@ class HomeFragment : Fragment() {
             if (isCameraDetected) {
                 connectionStatusCameraIcon.setImageResource(android.R.drawable.presence_online)
                 connectionStatusCameraTextView.text = "OK"
+                cameraStateModel.modelName.postValue(cameraStateModel.modelName.value)
 
             } else {
                 connectionStatusCameraIcon.setImageResource(android.R.drawable.presence_busy)
                 connectionStatusCameraTextView.text = "None"
+                connectionStatusModelNameTextView.text = "None"
             }
         })
     }
@@ -112,7 +147,10 @@ class HomeFragment : Fragment() {
 
         connectionStatusCameraTextView = root.findViewById(org.hadim.lumitrol.R.id.connection_status_camera_text) as TextView
         connectionStatusCameraIcon = root.findViewById(org.hadim.lumitrol.R.id.connection_status_camera_icon) as ImageView
-        connectionStatusCameraProgressBar = root.findViewById(org.hadim.lumitrol.R.id.connection_status_camera_progress_bar) as ProgressBar
+        connectionStatusCameraProgressBar =
+            root.findViewById(org.hadim.lumitrol.R.id.connection_status_camera_progress_bar) as ProgressBar
+
+        connectionStatusModelNameTextView = root.findViewById(org.hadim.lumitrol.R.id.connection_status_model_name_text) as TextView
 
         // Enable button for automatic connection
         val connectButton: Button = root.findViewById(org.hadim.lumitrol.R.id.connect_button) as Button

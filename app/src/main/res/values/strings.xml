@@ -6,8 +6,8 @@
 
     <string name="menu_home">Home</string>
     <string name="connect_button">Automatic Connection</string>
-    <string name="home_welcome_text">Connect to your camera using the button below. For this you need to first
-        enable the Wifi on your camera and connect to it with this device.</string>
+    <string name="connection_welcome">Enable the Wifi on your camera. Then, connect your device to the camera.</string>
+    <string name="home_welcome_text">Discover your camera IP address automatically (this feature does not work yet).</string>
     <string name="home_ip_text">Alternatively, you can enter the IP address of your camera below.</string>
     <string name="manual_connect_button">Manual Connection</string>
 
@@ -23,4 +23,5 @@
     <string name="home_status">Connection Status</string>
     <string name="status_tab">Connection Status</string>
     <string name="connection_status_none">None</string>
+    <string name="control_capture">Take Photo</string>
 </resources>

@@ -6,19 +6,19 @@
 
     <fragment
         android:id="@+id/nav_home"
-        android:name="org.hadim.lumitrol.ui.home.HomeFragment"
+        android:name="org.hadim.lumitrol.ui.HomeFragment"
         android:label="@string/menu_home"
         tools:layout="@layout/fragment_home" />
 
     <fragment
         android:id="@+id/nav_control"
-        android:name="org.hadim.lumitrol.ui.control.ControlFragment"
+        android:name="org.hadim.lumitrol.ui.ControlFragment"
         android:label="@string/menu_control"
         tools:layout="@layout/fragment_control" />
 
     <fragment
         android:id="@+id/nav_gallery"
-        android:name="org.hadim.lumitrol.ui.gallery.GalleryFragment"
+        android:name="org.hadim.lumitrol.ui.GalleryFragment"
         android:label="@string/menu_gallery"
         tools:layout="@layout/fragment_gallery" />
 </navigation>

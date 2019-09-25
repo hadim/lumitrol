@@ -2,6 +2,10 @@ package org.hadim.lumitrol.ui
 
 import android.content.Context
 import android.graphics.Color
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkCapabilities
+import android.net.wifi.WifiManager
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -23,11 +27,17 @@ import org.hadim.lumitrol.model.CameraStateModel
 import org.hadim.lumitrol.network.CameraRequest
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
+import android.net.NetworkRequest
+
+
 
 
 class HomeFragment : Fragment() {
 
     private val cameraStateModel: CameraStateModel by activityViewModels()
+
+    private lateinit var connectionStatusWIFITextView: TextView
+    private lateinit var connectionStatusWIFIIcon: ImageView
 
     private lateinit var connectionStatusIPTextView: TextView
     private lateinit var connectionStatusIPIcon: ImageView
@@ -44,8 +54,20 @@ class HomeFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        cameraStateModel.isWifiEnabled.observe(this, Observer { isWifiEnabled ->
+            if (isWifiEnabled) {
+                connectionStatusWIFIIcon.setImageResource(android.R.drawable.presence_online)
+                connectionStatusWIFITextView.text = "ON"
+
+            } else {
+                connectionStatusWIFIIcon.setImageResource(android.R.drawable.presence_busy)
+                connectionStatusWIFITextView.text = "OFF"
+            }
+        })
+
         cameraStateModel.ipAddress.observe(this, Observer { newIPAddress ->
-            connectionStatusIPTextView.setText(newIPAddress)
+
+            connectionStatusIPTextView.text = newIPAddress
 
             connectionStatusIPProgressBar.visibility = View.VISIBLE
             connectionStatusIPIcon.visibility = View.GONE
@@ -53,15 +75,21 @@ class HomeFragment : Fragment() {
             cameraStateModel.isIReachable.value = false
             cameraStateModel.isCameraDetected.value = false
 
-            doAsync {
+            if (cameraStateModel.isWifiEnabled.value == true) {
 
-                var isReachable = InetAddresses.forString(newIPAddress).isReachable(2000)
-                cameraStateModel.isIReachable.postValue(isReachable)
+                doAsync {
 
-                uiThread {
-                    connectionStatusIPProgressBar.visibility = View.GONE
-                    connectionStatusIPIcon.visibility = View.VISIBLE
+                    var isReachable = InetAddresses.forString(newIPAddress).isReachable(2000)
+                    cameraStateModel.isIReachable.postValue(isReachable)
+
+                    uiThread {
+                        connectionStatusIPProgressBar.visibility = View.GONE
+                        connectionStatusIPIcon.visibility = View.VISIBLE
+                    }
                 }
+            } else {
+                connectionStatusIPProgressBar.visibility = View.GONE
+                connectionStatusIPIcon.visibility = View.VISIBLE
             }
 
         })
@@ -146,6 +174,9 @@ class HomeFragment : Fragment() {
         val root = inflater.inflate(org.hadim.lumitrol.R.layout.fragment_home, container, false)
 
         // Set some class attributes.
+        connectionStatusWIFITextView = root.findViewById(org.hadim.lumitrol.R.id.connection_status_wifi_text) as TextView
+        connectionStatusWIFIIcon = root.findViewById(org.hadim.lumitrol.R.id.connection_status_wifi_icon) as ImageView
+
         connectionStatusIPTextView = root.findViewById(org.hadim.lumitrol.R.id.connection_status_ip_text) as TextView
         connectionStatusIPIcon = root.findViewById(org.hadim.lumitrol.R.id.connection_status_ip_icon) as ImageView
         connectionStatusIPProgressBar = root.findViewById(org.hadim.lumitrol.R.id.connection_status_ip_progress_bar) as ProgressBar

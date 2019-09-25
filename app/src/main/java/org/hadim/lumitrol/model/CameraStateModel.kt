@@ -11,6 +11,7 @@ class CameraStateModel(state: SavedStateHandle) : ViewModel() {
 
     // Keep the key as a constant
     companion object {
+        private const val IS_WIFI_ENABLED_KEY = "isWifiEnabled"
         private const val IP_KEY = "ipAddress"
         private const val IS_IP_MANUAL_KEY = "isIPManual"
         private const val IS_IP_REACHABLE_KEY = "isIReachable"
@@ -21,6 +22,7 @@ class CameraStateModel(state: SavedStateHandle) : ViewModel() {
 
     private val savedStateHandle = state
 
+    val isWifiEnabled: MutableLiveData<Boolean> = savedStateHandle.getLiveData(IS_WIFI_ENABLED_KEY)
     val ipAddress: MutableLiveData<String> = savedStateHandle.getLiveData(IP_KEY)
     val isIPManual: MutableLiveData<Boolean> = savedStateHandle.getLiveData(IS_IP_MANUAL_KEY)
     val isIReachable: MutableLiveData<Boolean> = savedStateHandle.getLiveData(IS_IP_REACHABLE_KEY)

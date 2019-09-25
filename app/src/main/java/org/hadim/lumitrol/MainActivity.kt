@@ -11,6 +11,7 @@ import android.net.NetworkRequest
 import android.net.wifi.WifiManager
 import android.os.Bundle
 import android.util.Log
+import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -24,7 +25,6 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
 import org.hadim.lumitrol.model.CameraStateModel
-
 
 class MainActivity : AppCompatActivity() {
 
@@ -48,6 +48,11 @@ class MainActivity : AppCompatActivity() {
         appBarConfiguration = AppBarConfiguration(setOf(R.id.nav_home, R.id.nav_control, R.id.nav_gallery), drawerLayout)
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+
+        // Set version
+        val headerView = navView.getHeaderView(0)
+        val versionTextView = headerView.findViewById(R.id.version_text) as TextView
+        versionTextView.text = getVersionName()
 
         registerWifiChangeCallback()
         checkWifi()
@@ -132,5 +137,11 @@ class MainActivity : AppCompatActivity() {
         filter.addAction("android.net.wifi.WIFI_STATE_CHANGED")
         filter.addAction("android.net.wifi.STATE_CHANGE")
         registerReceiver(WifiBroadcastReceiver(), filter)
+    }
+
+    private fun getVersionName(): String? {
+        val manager = packageManager
+        val info = manager.getPackageInfo(packageName, 0)
+        return info?.versionName
     }
 }

@@ -101,13 +101,8 @@ class MainActivity : AppCompatActivity() {
     fun checkWifi() {
         // Check Wi-Fi is enabled.
         val wifi = applicationContext?.getSystemService(Context.WIFI_SERVICE) as WifiManager
-        if (wifi != null) {
-            cameraStateModel.isWifiEnabled.value = wifi.isWifiEnabled
-            enableNetworkOnWifi()
-        } else {
-            Log.e("MainActivity/checkWifi", "Error while checking Wi-Fi is enabled.")
-            cameraStateModel.isWifiEnabled.value = false
-        }
+        cameraStateModel.isWifiEnabled.value = wifi.isWifiEnabled
+        enableNetworkOnWifi()
     }
 
     private fun enableNetworkOnWifi() {
@@ -120,7 +115,7 @@ class MainActivity : AppCompatActivity() {
                 try {
                     mConnectivityManager.bindProcessToNetwork(network)
                 } catch (e: Exception) {
-                    Log.e("MainActivity/forceNetworkOnWifi", e.message)
+                    Log.e("MainActivity/forceNetworkOnWifi", e.message as String)
                 }
 
             }

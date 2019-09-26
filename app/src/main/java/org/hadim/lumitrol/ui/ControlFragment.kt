@@ -1,5 +1,7 @@
 package org.hadim.lumitrol.ui
 
+import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -9,10 +11,14 @@ import android.widget.ImageButton
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import com.google.android.exoplayer2.ExoPlayerFactory
+import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.source.ProgressiveMediaSource
+import com.google.android.exoplayer2.ui.PlayerView
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import com.google.android.exoplayer2.util.Util
 import org.hadim.lumitrol.model.CameraStateModel
-import org.hadim.lumitrol.network.CameraStreamer
 import org.hadim.lumitrol.util.forEachChildView
-import org.hadim.lumitrol.view.StreamView
 import java.util.*
 
 
@@ -21,11 +27,8 @@ class ControlFragment : Fragment() {
     private val cameraStateModel: CameraStateModel by activityViewModels()
     private lateinit var rootLayout: View
 
-    private lateinit var streamView: StreamView
-    private lateinit var cameraStreamer: CameraStreamer
-    private var streamerThread: Thread? = null
-    private var isStreaming: Boolean = false
     private lateinit var streamTimer: Timer
+    private lateinit var streamPlayer: Player
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         rootLayout = inflater.inflate(org.hadim.lumitrol.R.layout.fragment_control, container, false)
@@ -112,27 +115,15 @@ class ControlFragment : Fragment() {
 
     private fun startStream() {
 
-        if (isStreaming) return
+        if (::streamPlayer.isInitialized && streamPlayer?.isPlaying) return
 
-        val streamView: StreamView = rootLayout.findViewById(org.hadim.lumitrol.R.id.stream_view) as StreamView
-        cameraStreamer = CameraStreamer(streamView::setCurrentImage, cameraStateModel.ipAddress.value as String)
+        var localUdpPort = 41099
+        var ipAddress = cameraStateModel.ipAddress.value
+
         cameraStateModel.cameraRequest.startStream(
             onSuccess = {
                 try {
-
-                    cameraStateModel.cameraRequest.autoReviewUnlock(null, null)
-
-                    streamTimer = Timer()
-                    streamTimer.schedule(object : TimerTask() {
-                        override fun run() {
-                            cameraStateModel.cameraRequest.startStream(null, null, cameraStreamer.localUdpPort)
-                        }
-                    }, 0, 1000)
-
-                    streamerThread = Thread(cameraStreamer)
-                    streamerThread?.start()
-                    isStreaming = true
-
+                    initializePlayer(ipAddress, localUdpPort)
                 } catch (e: Exception) {
                     Log.e("ControlFragment/startStream", "Socket creation error.")
                     Log.e("ControlFragment/startStream", e.message)
@@ -141,20 +132,46 @@ class ControlFragment : Fragment() {
                 Log.e("ControlFragment/startStream", "Stream doesn't start.")
                 t?.let { Log.e("ControlFragment/startStream", t.message) }
             },
-            port = cameraStreamer.localUdpPort
+            port = localUdpPort
         )
+    }
+
+    private fun initializePlayer(ipAddress: String?, localUdpPort: Int) {
+        cameraStateModel.cameraRequest.autoReviewUnlock(null, null)
+
+        streamTimer = Timer()
+        streamTimer.schedule(object : TimerTask() {
+            override fun run() {
+                cameraStateModel.cameraRequest.startStream(null, null, localUdpPort)
+            }
+        }, 0, 1000)
+
+        val streamPlayer = ExoPlayerFactory.newSimpleInstance(context?.applicationContext)
+
+        val mediaDataSourceFactory = DefaultDataSourceFactory(context, Util.getUserAgent(context, "Lumitrol"))
+
+        val stream_uri = Uri.parse("udp://@$ipAddress:$localUdpPort")
+        val mediaSource = ProgressiveMediaSource.Factory(mediaDataSourceFactory).createMediaSource(stream_uri)
+
+        with(streamPlayer) {
+            prepare(mediaSource, false, false)
+            playWhenReady = true
+        }
+
+        val streamView: PlayerView = rootLayout.findViewById(org.hadim.lumitrol.R.id.stream_view) as PlayerView
+        streamView.setShutterBackgroundColor(Color.TRANSPARENT)
+        streamView.player = streamPlayer
+        streamView.requestFocus()
     }
 
     private fun stopStream() {
 
-        if (!isStreaming) return
+        if (::streamPlayer.isInitialized && !streamPlayer?.isPlaying) return
 
         try {
             cameraStateModel.cameraRequest.stopStream(null, null)
-            streamerThread?.interrupt()
-            streamerThread?.join()
-            isStreaming = false
             streamTimer?.cancel()
+            if (::streamPlayer.isInitialized) streamPlayer?.release()
         } catch (e: InterruptedException) {
             Log.e("ControlFragment/stopStream", "Error during stream interruption.")
             Log.e("ControlFragment/stopStream", e.message)

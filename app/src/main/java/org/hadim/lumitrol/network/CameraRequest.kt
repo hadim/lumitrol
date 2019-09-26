@@ -6,6 +6,8 @@ import com.android.volley.RequestQueue
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
+import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.uiThread
 
 
 class CameraRequest(ip: String, context: Context) {
@@ -18,19 +20,20 @@ class CameraRequest(ip: String, context: Context) {
         requestQueue = Volley.newRequestQueue(context)
     }
 
-    private fun request(request: String, onSuccess: ((String) -> Unit)?, onFailure: ((Throwable?) -> Unit)?): StringRequest {
+    private fun request(request: String, onSuccess: ((String) -> Unit)?, onFailure: ((Throwable?) -> Unit)?) {
 
-        val url = "http://$ipAddress/$request"
-        var stringRequest = StringRequest(
-            Request.Method.GET, url,
-            Response.Listener<String> { response: String ->
-                onSuccess?.let { onSuccess(response) }
-            },
-            Response.ErrorListener { t ->
-                onFailure?.let { onFailure(t.cause) }
-            })
-        requestQueue.add(stringRequest)
-        return stringRequest
+        doAsync {
+            val url = "http://$ipAddress/$request"
+            var stringRequest = StringRequest(
+                Request.Method.GET, url,
+                Response.Listener<String> { response: String ->
+                    onSuccess?.let { uiThread { onSuccess(response) } }
+                },
+                Response.ErrorListener { t ->
+                    onFailure?.let { uiThread { onFailure(t) } }
+                })
+            requestQueue.add(stringRequest)
+        }
     }
 
     fun getState(onSuccess: ((String) -> Unit)?, onFailure: ((Throwable?) -> Unit)?) {

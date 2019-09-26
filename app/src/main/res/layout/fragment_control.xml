@@ -18,6 +18,19 @@
             android:gravity="center"
             android:orientation="vertical">
 
+            <org.hadim.lumitrol.view.StreamView
+                android:id="@+id/stream_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <View
+                android:id="@+id/divider2"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="12dp"
+                android:background="?android:attr/listDivider" />
+
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"

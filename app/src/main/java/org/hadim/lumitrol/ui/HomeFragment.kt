@@ -100,63 +100,63 @@ class HomeFragment : Fragment() {
 
         cameraStateModel.isIReachable.observe(this, Observer { isReachable ->
 
-            cameraStateModel.isCameraDetected.value = false
-            cameraStateModel.modelName.value = "None"
+            if (cameraStateModel.isCameraDetected.value == false) {
 
-            if (isReachable) {
-                logTextView.text = ""
-                connectionStatusIPIcon.setImageResource(android.R.drawable.presence_online)
+                cameraStateModel.modelName.value = "None"
 
-                connectionStatusCameraProgressBar.visibility = View.VISIBLE
-                connectionStatusCameraIcon.visibility = View.GONE
+                if (isReachable) {
+                    logTextView.text = ""
+                    connectionStatusIPIcon.setImageResource(android.R.drawable.presence_online)
+
+                    connectionStatusCameraProgressBar.visibility = View.VISIBLE
+                    connectionStatusCameraIcon.visibility = View.GONE
 
 
-                val ipAddress = cameraStateModel.ipAddress.value as String
-                cameraStateModel.cameraRequest = CameraRequest(ipAddress, this.context as Context)
+                    val ipAddress = cameraStateModel.ipAddress.value as String
+                    cameraStateModel.cameraRequest = CameraRequest(ipAddress, this.context as Context)
 
-                cameraStateModel.cameraRequest.getInfo(
-                    onSuccess = { response: String ->
+                    cameraStateModel.cameraRequest.getInfo(
+                        onSuccess = { response: String ->
 
-                        val isValid = cameraStateModel.parseInfo(response)
+                            val isValid = cameraStateModel.parseInfo(response)
 
-                        if (isValid == true) {
+                            if (isValid == true) {
 
-                            Log.i("HomeFragment/cameraDetection", "Connection with the camera established.")
-                            logTextView.text = ""
+                                Log.i("HomeFragment/cameraDetection", "Connection with the camera established.")
+                                logTextView.text = ""
 
-                            cameraStateModel.isCameraDetected.postValue(true)
-                            connectionStatusCameraProgressBar.visibility = View.GONE
-                            connectionStatusCameraIcon.visibility = View.VISIBLE
+                                cameraStateModel.isCameraDetected.postValue(true)
+                                connectionStatusCameraProgressBar.visibility = View.GONE
+                                connectionStatusCameraIcon.visibility = View.VISIBLE
 
-                        } else {
+                            } else {
 
-                            Log.e("HomeFragment/cameraDetection", "Can't parse the camera response.")
-                            Log.e("HomeFragment/cameraDetection", "Response:")
-                            Log.e("HomeFragment/cameraDetection", response)
+                                Log.e("HomeFragment/cameraDetection", "Can't parse the camera response.")
+                                Log.e("HomeFragment/cameraDetection", "Response:")
+                                Log.e("HomeFragment/cameraDetection", response)
 
-                            logTextView.text = "Can't parse the camera response."
+                                logTextView.text = "Can't parse the camera response."
+
+                                cameraStateModel.isCameraDetected.postValue(false)
+                                connectionStatusCameraProgressBar.visibility = View.GONE
+                                connectionStatusCameraIcon.visibility = View.VISIBLE
+                            }
+                        },
+                        onFailure = { t: Throwable? ->
+                            Log.e("HomeFragment/cameraDetection", "Camera detection failed.")
+                            t?.let { Log.e("HomeFragment/cameraDetection", t.message as String) }
+
+                            logTextView.text = "Camera detection failed."
 
                             cameraStateModel.isCameraDetected.postValue(false)
                             connectionStatusCameraProgressBar.visibility = View.GONE
                             connectionStatusCameraIcon.visibility = View.VISIBLE
-                        }
-                    },
-                    onFailure = { t: Throwable? ->
-                        Log.e("HomeFragment/cameraDetection", "Camera detection failed.")
-                        logTextView.text = "Camera detection failed."
-
-                        if (t != null && t.message != null) {
-                            Log.e("HomeFragment/cameraDetection", t.message as String)
-                        }
-
-                        cameraStateModel.isCameraDetected.postValue(false)
-                        connectionStatusCameraProgressBar.visibility = View.GONE
-                        connectionStatusCameraIcon.visibility = View.VISIBLE
-                    })
+                        })
 
 
-            } else {
-                connectionStatusIPIcon.setImageResource(android.R.drawable.presence_busy)
+                } else {
+                    connectionStatusIPIcon.setImageResource(android.R.drawable.presence_busy)
+                }
             }
         })
 
@@ -178,7 +178,6 @@ class HomeFragment : Fragment() {
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-
         val root = inflater.inflate(org.hadim.lumitrol.R.layout.fragment_home, container, false)
 
         // Set some class attributes.

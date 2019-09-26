@@ -77,18 +77,20 @@ class MainActivity : AppCompatActivity() {
 
         cameraStateModel.isCameraDetected.observe(this, Observer { isCameraDetected ->
             if (isCameraDetected) {
-                cameraStateModel.checkAlive(isAliveCallback = { isAlive ->
-                    if (!isAlive) {
-                        cameraStateModel.ipAddress.value = cameraStateModel.ipAddress.value
-                        cameraStateModel.isIReachable.value = false
-                        cameraStateModel.isCameraDetected.value = false
-                        navController.navigate(R.id.nav_home)
-                    }
-                })
+                // TODO: Disable alive check while debugging UDP camera stream.
+//                cameraStateModel.checkAlive(isAliveCallback = { isAlive ->
+//                    if (!isAlive) {
+//                        cameraStateModel.ipAddress.value = cameraStateModel.ipAddress.value
+//                        cameraStateModel.isIReachable.value = false
+//                        cameraStateModel.isCameraDetected.value = false
+//                        navController.navigate(R.id.nav_home)
+//                    }
+//                })
             } else {
                 cameraStateModel.cancelCheckAlive()
             }
         })
+
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -103,7 +105,7 @@ class MainActivity : AppCompatActivity() {
             cameraStateModel.isWifiEnabled.value = wifi.isWifiEnabled
             enableNetworkOnWifi()
         } else {
-            Log.e("MAIN/checkWifi", "Error while checking Wi-Fi is enabled.")
+            Log.e("MainActivity/checkWifi", "Error while checking Wi-Fi is enabled.")
             cameraStateModel.isWifiEnabled.value = false
         }
     }
@@ -118,7 +120,7 @@ class MainActivity : AppCompatActivity() {
                 try {
                     mConnectivityManager.bindProcessToNetwork(network)
                 } catch (e: Exception) {
-                    Log.e("MAIN/forceNetworkOnWifi", e.message)
+                    Log.e("MainActivity/forceNetworkOnWifi", e.message)
                 }
 
             }

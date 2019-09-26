@@ -2,23 +2,24 @@ package org.hadim.lumitrol.network
 
 import android.content.Context
 import com.android.volley.Request
+import com.android.volley.RequestQueue
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 
 
-class CameraRequest {
+class CameraRequest(ip: String, context: Context) {
 
     private val ipAddress: String
-    private val context: Context
+    private val requestQueue: RequestQueue
 
-    constructor(ip: String, ctx: Context) {
+    init {
         ipAddress = ip
-        context = ctx
+        requestQueue = Volley.newRequestQueue(context)
     }
 
     private fun request(request: String, onSuccess: ((String) -> Unit)?, onFailure: ((Throwable?) -> Unit)?): StringRequest {
-        val queue = Volley.newRequestQueue(context)
+
         val url = "http://$ipAddress/$request"
         var stringRequest = StringRequest(
             Request.Method.GET, url,
@@ -28,7 +29,7 @@ class CameraRequest {
             Response.ErrorListener { t ->
                 onFailure?.let { onFailure(t.cause) }
             })
-        queue.add(stringRequest)
+        requestQueue.add(stringRequest)
         return stringRequest
     }
 
@@ -77,7 +78,7 @@ class CameraRequest {
         request(request, onSuccess, onFailure)
     }
 
-    fun startStream(onSuccess: ((String) -> Unit)?, onFailure: ((Throwable?) -> Unit)?, port: Int = 4199) {
+    fun startStream(onSuccess: ((String) -> Unit)?, onFailure: ((Throwable?) -> Unit)?, port: Int) {
         val request = "cam.cgi?mode=startstream&value=$port"
         request(request, onSuccess, onFailure)
     }
@@ -86,5 +87,11 @@ class CameraRequest {
         val request = "cam.cgi?mode=stopstream"
         request(request, onSuccess, onFailure)
     }
+
+    fun autoReviewUnlock(onSuccess: ((String) -> Unit)?, onFailure: ((Throwable?) -> Unit)?) {
+        val request = "cam.cgi?mode=camcmd?value=autoreviewunlock"
+        request(request, onSuccess, onFailure)
+    }
+
 
 }

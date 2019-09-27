@@ -142,16 +142,16 @@ class ControlFragment : Fragment() {
         streamTimer = Timer()
         streamTimer.schedule(object : TimerTask() {
             override fun run() {
-                cameraStateModel.cameraRequest.startStream(null, null, localUdpPort)
+                //cameraStateModel.cameraRequest.startStream(null, null, localUdpPort)
             }
-        }, 0, 1000)
+        }, 0, 5000)
 
         val streamPlayer = ExoPlayerFactory.newSimpleInstance(context?.applicationContext)
 
         val mediaDataSourceFactory = DefaultDataSourceFactory(context, Util.getUserAgent(context, "Lumitrol"))
 
-        val stream_uri = Uri.parse("udp://@$ipAddress:$localUdpPort")
-        val mediaSource = ProgressiveMediaSource.Factory(mediaDataSourceFactory).createMediaSource(stream_uri)
+        val streamURI = Uri.parse("udp://$ipAddress:$localUdpPort")
+        val mediaSource = ProgressiveMediaSource.Factory(mediaDataSourceFactory).createMediaSource(streamURI)
 
         with(streamPlayer) {
             prepare(mediaSource, false, false)

@@ -25,6 +25,9 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
 import org.hadim.lumitrol.model.CameraStateModel
+import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Single
+
+
 
 class MainActivity : AppCompatActivity() {
 

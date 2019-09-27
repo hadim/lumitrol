@@ -15,7 +15,6 @@
     <string name="manual_connect_button">Manual Connection</string>
 
     <string name="default_ip">192.168.54.1</string>
-
     <string name="auto_tab">Automatic</string>
     <string name="manual_tab">Manual</string>
     <string name="title_activity_main2">Main2Activity</string>

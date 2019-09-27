@@ -29,7 +29,8 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
     <TextView
-        android:layout_width="0dp"
+        android:id="@+id/version_text"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1" />
 

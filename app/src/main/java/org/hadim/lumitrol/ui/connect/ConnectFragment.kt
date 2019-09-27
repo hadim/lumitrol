@@ -15,14 +15,16 @@ class ConnectFragment : Fragment() {
 
     private lateinit var controlViewModel: ControlViewModel
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    fun layoutRes(): Int {
+        return R.layout.fragment_connect
+    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        //var root = super.onCreateView(inflater, container, savedInstanceState)
         controlViewModel =
             ViewModelProviders.of(this).get(ControlViewModel::class.java)
-        val root = inflater.inflate(R.layout.fragment_connect, container, false)
+        val root = inflater.inflate(layoutRes(), container, false)
+
         val textView: TextView = root.findViewById(R.id.text_home)
         controlViewModel.text.observe(this, Observer {
             textView.text = it

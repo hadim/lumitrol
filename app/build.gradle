@@ -34,10 +34,10 @@ dependencies {
     // Kotlin
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.3.50"
 
-    // Google material.
+    // Google material
     implementation "com.google.android.material:material:1.1.0-alpha10"
 
-    // AndroidX dependencies.
+    // AndroidX dependencies
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.core:core-ktx:1.1.0'
@@ -55,19 +55,27 @@ dependencies {
 
     implementation 'androidx.fragment:fragment-ktx:1.2.0-alpha04'
 
-    // Exoplayer: video player for streaming.
+    // Dagger: dependencies injection
+    implementation "com.google.dagger:dagger:$daggerVersion"
+    implementation "com.google.dagger:dagger-android:$daggerVersion"
+    implementation "com.google.dagger:dagger-android-support:$daggerVersion"
+    kapt "com.google.dagger:dagger-compiler:$daggerVersion"
+    kapt "com.google.dagger:dagger-android-processor:$daggerVersion"
+
+    // Retrofit: HTTP client
+    implementation 'com.squareup.retrofit2:retrofit:2.6.1'
+
+    // OkHttp: HTTP client
+    implementation("com.squareup.okhttp3:okhttp:4.2.0")
+
+    // Exoplayer: video player for streaming
     implementation 'com.google.android.exoplayer:exoplayer:2.10.5'
 
     // Butterknife (@BindView)
     implementation 'com.jakewharton:butterknife:10.2.0'
     kapt 'com.jakewharton:butterknife-compiler:10.2.0'
 
-    // Test dependencies.
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'androidx.navigation:navigation-fragment:2.1.0'
-    implementation 'androidx.navigation:navigation-ui:2.1.0'
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.1.0'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.1.0'
+    // Test dependencies
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'

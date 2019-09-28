@@ -1,13 +1,20 @@
 package org.hadim.lumitrol.ui.connect
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import android.util.Log
 import androidx.lifecycle.ViewModel
+import org.hadim.lumitrol.model.Repository
+import javax.inject.Inject
 
-class ConnectViewModel : ViewModel() {
 
-    private val _text = MutableLiveData<String>().apply {
-        value = "This is home Fragment"
+class ConnectViewModel @Inject constructor(private var repository: Repository) : ViewModel() {
+
+    companion object {
+        const val TAG: String = "ConnectViewModel"
     }
-    val text: LiveData<String> = _text
+
+    init {
+        Log.d("$TAG/init", "Init ConnectViewModel")
+        repository.test()
+    }
+
 }

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_span="9"
@@ -55,7 +56,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:gravity="start|center_vertical"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        tools:ignore="UselessParent">
 
                         <ImageView
                             android:layout_width="wrap_content"
@@ -369,7 +371,8 @@
                     android:layout_marginEnd="8dp"
                     android:inputType="textUri"
                     android:text="@string/default_ip"
-                    android:textAlignment="center" />
+                    android:textAlignment="center"
+                    android:importantForAutofill="no" />
 
                 <TextView
                     android:id="@+id/errorManualIPText"
@@ -381,7 +384,7 @@
                 <Button
                     android:id="@+id/manual_connect_button"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="0dp"
                     android:layout_weight="1"
                     android:text="@string/manual_connect_button" />
 

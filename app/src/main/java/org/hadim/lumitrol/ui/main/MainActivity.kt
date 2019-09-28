@@ -1,6 +1,7 @@
 package org.hadim.lumitrol.ui.main
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.widget.Toolbar
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.Navigation.findNavController
@@ -12,12 +13,18 @@ import butterknife.BindView
 import com.google.android.material.navigation.NavigationView
 import org.hadim.lumitrol.R
 import org.hadim.lumitrol.base.BaseActivity
+import org.hadim.lumitrol.model.Repository
+import javax.inject.Inject
 
 
 class MainActivity : BaseActivity() {
 
-//    @Inject
-//    lateinit var testViewModel: ConnectViewModel
+    companion object {
+        const val TAG: String = "MainActivity"
+    }
+
+    @Inject
+    lateinit var repository: Repository
 
     @BindView(R.id.toolbar)
     lateinit var toolbar: Toolbar
@@ -37,8 +44,6 @@ class MainActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        //Log.e("+============", testViewModel.toString())
-
         if (savedInstanceState == null) {
 
             // Setup toolbar
@@ -56,6 +61,8 @@ class MainActivity : BaseActivity() {
             val navController = findNavController(this, R.id.nav_host_fragment)
             setupActionBarWithNavController(navController, appBarConfiguration)
             navView.setupWithNavController(navController)
+
+            Log.d("$TAG/onCreate", "Init MainActivity")
         }
     }
 

@@ -1,30 +1,37 @@
 package org.hadim.lumitrol.ui.control
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProviders
 import org.hadim.lumitrol.R
-import org.hadim.lumitrol.ui.control.ControlViewModel
+import org.hadim.lumitrol.base.BaseFragment
+import javax.inject.Inject
 
-class ControlFragment : Fragment() {
+class ControlFragment : BaseFragment() {
 
-    private lateinit var controlViewModel: ControlViewModel
+    companion object {
+        const val TAG: String = "ControlFragment"
+    }
+
+    @Inject
+    lateinit var controlViewModel: ControlViewModel
+
+    override fun layoutRes(): Int {
+        return R.layout.fragment_control
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        controlViewModel =
-            ViewModelProviders.of(this).get(ControlViewModel::class.java)
-        val root = inflater.inflate(R.layout.fragment_control, container, false)
-//        val textView: TextView = root.findViewById(R.id.text_gallery)
-//        galleryViewModel.text.observe(this, Observer {
-//            textView.text = it
-//        })
+    ): View {
+
+        val root = super.onCreateView(inflater, container, savedInstanceState)
+
+        Log.d("$TAG/onCreateView", "Init ControlFragment")
+
         return root
     }
 }

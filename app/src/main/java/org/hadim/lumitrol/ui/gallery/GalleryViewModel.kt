@@ -1,13 +1,19 @@
 package org.hadim.lumitrol.ui.gallery
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import android.util.Log
 import androidx.lifecycle.ViewModel
+import org.hadim.lumitrol.model.Repository
+import javax.inject.Inject
 
-class GalleryViewModel : ViewModel() {
 
-    private val _text = MutableLiveData<String>().apply {
-        value = "This is gallery Fragment"
+class GalleryViewModel @Inject constructor(repository: Repository) : ViewModel() {
+
+    companion object {
+        const val TAG: String = "GalleryViewModel"
     }
-    val text: LiveData<String> = _text
+
+    init {
+        Log.d("$TAG/init", "Init GalleryViewModel")
+    }
+
 }

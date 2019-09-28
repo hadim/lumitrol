@@ -20,10 +20,15 @@ abstract class BaseFragment : DaggerFragment() {
     @LayoutRes
     protected abstract fun layoutRes(): Int
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view: View = inflater.inflate(layoutRes(), container, false)
-        unbinder = ButterKnife.bind(this, view)
-        return view
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+
+        // Get root view of the fragment/view
+        val root = inflater.inflate(layoutRes(), container, false)
+
+        // Bind views
+        unbinder = ButterKnife.bind(this, root)
+
+        return root
     }
 
     override fun onAttach(context: Context) {

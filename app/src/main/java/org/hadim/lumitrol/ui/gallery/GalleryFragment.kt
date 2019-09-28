@@ -1,29 +1,37 @@
 package org.hadim.lumitrol.ui.gallery
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProviders
 import org.hadim.lumitrol.R
+import org.hadim.lumitrol.base.BaseFragment
+import javax.inject.Inject
 
-class GalleryFragment : Fragment() {
+class GalleryFragment : BaseFragment() {
 
-    private lateinit var galleryViewModel: GalleryViewModel
+    companion object {
+        const val TAG: String = "GalleryFragment"
+    }
+
+    @Inject
+    lateinit var galleryViewModel: GalleryViewModel
+
+    override fun layoutRes(): Int {
+        return R.layout.fragment_gallery
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        galleryViewModel =
-            ViewModelProviders.of(this).get(GalleryViewModel::class.java)
-        val root = inflater.inflate(R.layout.fragment_gallery, container, false)
-//        val textView: TextView = root.findViewById(R.id.text_gallery)
-//        galleryViewModel.text.observe(this, Observer {
-//            textView.text = it
-//        })
+    ): View {
+
+        val root = super.onCreateView(inflater, container, savedInstanceState)
+
+        Log.d("$TAG/onCreateView", "Init GalleryFragment")
+
         return root
     }
 }

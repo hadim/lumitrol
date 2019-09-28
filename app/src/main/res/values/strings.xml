@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Lumitrol</string>
 
     <string name="nav_header_title">Lumitrol</string>
@@ -18,11 +18,11 @@
 
     <string name="auto_tab">Automatic</string>
     <string name="manual_tab">Manual</string>
-    <string name="title_activity_main2">Main2Activity</string>
-    <string name="tab_text_1">Tab 1</string>
-    <string name="tab_text_2">Tab 2</string>
-    <string name="home_status">Connection Status</string>
+    <string name="title_activity_main2" tools:keep="@string/title_activity_main2">Main2Activity</string>
+    <string name="tab_text_1" tools:keep="@string/tab_text_1">Tab 1</string>
+    <string name="tab_text_2" tools:keep="@string/tab_text_2">Tab 2</string>
+    <string name="home_status" tools:keep="@string/home_status">Connection Status</string>
     <string name="status_tab">Connection Status</string>
     <string name="connection_status_none">None</string>
-    <string name="control_capture">Take Photo</string>
+    <string name="control_capture" tools:keep="@string/control_capture">Take Photo</string>
 </resources>

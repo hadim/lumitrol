@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import org.hadim.lumitrol.R
 import org.hadim.lumitrol.base.BaseFragment
-import javax.inject.Inject
 
 class GalleryFragment : BaseFragment() {
 
@@ -15,8 +14,8 @@ class GalleryFragment : BaseFragment() {
         const val TAG: String = "GalleryFragment"
     }
 
-    @Inject
-    lateinit var galleryViewModel: GalleryViewModel
+//    @Inject
+//    lateinit var galleryViewModel: GalleryViewModel
 
     override fun layoutRes(): Int {
         return R.layout.fragment_gallery

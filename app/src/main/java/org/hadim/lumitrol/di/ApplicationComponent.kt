@@ -1,33 +1,24 @@
 package org.hadim.lumitrol.di
 
+import android.content.Context
 import dagger.BindsInstance
 import dagger.Component
-import dagger.android.AndroidInjectionModule
-import dagger.android.AndroidInjector
-import dagger.android.support.AndroidSupportInjectionModule
-import dagger.android.support.DaggerApplication
-import org.hadim.lumitrol.LumitrolApplication
+import org.hadim.lumitrol.model.Repository
 import javax.inject.Singleton
 
 
 @Singleton
-@Component(
-    modules = [
-        AndroidInjectionModule::class,
-        AndroidSupportInjectionModule::class,
-        ApplicationModule::class,
-        ViewModelModule::class,
-        ActivityBindingModule::class]
-)
-interface ApplicationComponent : AndroidInjector<DaggerApplication> {
+@Component(modules = [AssistedInjectModule::class, ApplicationModule::class])
+interface ApplicationComponent {
 
     @Component.Builder
     interface Builder {
         @BindsInstance
-        fun application(application: LumitrolApplication): Builder
+        fun applicationContext(applicationContext: Context): Builder
 
         fun build(): ApplicationComponent
     }
 
-    fun inject(application: LumitrolApplication)
+    val repositoryFactory: Repository.Factory
 }
+

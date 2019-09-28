@@ -7,12 +7,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import butterknife.ButterKnife
 import butterknife.Unbinder
-import dagger.android.support.DaggerFragment
 
 
-abstract class BaseFragment : DaggerFragment() {
+abstract class BaseFragment : Fragment() {
 
     private var unbinder: Unbinder? = null
     private var baseActivity: AppCompatActivity? = null
@@ -20,7 +20,10 @@ abstract class BaseFragment : DaggerFragment() {
     @LayoutRes
     protected abstract fun layoutRes(): Int
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
 
         // Get root view of the fragment/view
         val root = inflater.inflate(layoutRes(), container, false)

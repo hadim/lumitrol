@@ -1,18 +1,18 @@
 package org.hadim.lumitrol
 
-import dagger.android.AndroidInjector
-import dagger.android.support.DaggerApplication
+import android.app.Activity
+import android.app.Application
+import org.hadim.lumitrol.di.ApplicationComponent
 import org.hadim.lumitrol.di.DaggerApplicationComponent
 
 
-class LumitrolApplication : DaggerApplication() {
+class LumitrolApplication : Application() {
 
-    override fun applicationInjector(): AndroidInjector<out DaggerApplication> {
-        val component = DaggerApplicationComponent.builder().application(this).build()
-        component.inject(this)
-
-        return component
+    val component: ApplicationComponent by lazy {
+        DaggerApplicationComponent.builder()
+            .applicationContext(applicationContext)
+            .build()
     }
-
 }
 
+val Activity.component get() = (application as LumitrolApplication).component

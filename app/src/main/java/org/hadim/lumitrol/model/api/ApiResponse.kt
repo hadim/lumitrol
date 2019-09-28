@@ -4,15 +4,28 @@ import org.simpleframework.xml.Element
 import org.simpleframework.xml.Root
 
 
-@Root(name="camrply", strict = false)
-class ApiResponse {
-    @field:Element(required = false) var result: String? = null
-    @field:Element(required = false) var state: ApiResponseState? = null
+interface ApiResponse {
+    var result: String?
 }
 
-@Root(name="state", strict = false)
-class ApiResponseState {
-    // TODO: Implement here.
-    //  Maybe we need to parse in a dynamic manner since
-    //  all cameras might not have the same fields.
+@Root(name = "camrply", strict = false)
+abstract class ApiResponseBase : ApiResponse {
+    @field:Element(required = false)
+    override var result: String? = null
+}
+
+class ApiResponseSimple : ApiResponseBase()
+
+class ApiResponseCapability : ApiResponseBase() {
+
+    @field:Element(required = true, name = "comm_proto_ver")
+    var version: String? = null
+
+    @field:Element(required = true, name = "productinfo")
+    lateinit var info: ProductInfo
+
+    class ProductInfo {
+        @field:Element(required = true, name = "modelname")
+        lateinit var modelName: String
+    }
 }

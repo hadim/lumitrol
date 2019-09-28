@@ -1,52 +1,53 @@
 package org.hadim.lumitrol.model
 
 import android.util.Log
-import org.hadim.lumitrol.model.api.ApiResponse
+import androidx.lifecycle.MutableLiveData
+import com.squareup.inject.assisted.AssistedInject
+import org.hadim.lumitrol.base.BaseRepository
 import org.hadim.lumitrol.model.api.ApiService
 import org.hadim.lumitrol.model.api.ApiServiceFactory
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class Repository @Inject constructor() {
+
+class Repository @AssistedInject constructor() : BaseRepository() {
 
     companion object {
         const val TAG: String = "Repository"
-        const val MAX_RETRY_BEFORE_FAIL = 5
     }
 
-    @Inject
-    lateinit var apiServiceFactory: ApiServiceFactory
+    @AssistedInject.Factory
+    interface Factory {
+        fun create(): Repository
+    }
 
+    private lateinit var apiServiceFactory: ApiServiceFactory
     private lateinit var apiService: ApiService
+
+    val netWorkError: MutableLiveData<String?> = MutableLiveData()
+    val netWorkFailure: MutableLiveData<String?> = MutableLiveData()
 
     init {
         Log.d("$TAG/init", "Init Repository")
     }
 
-    fun test() {
+    fun call() {
 
         val ipAddress = "192.168.54.1"
 
         apiService = apiServiceFactory.create("http://$ipAddress")
-        apiService.getState()
-            .enqueue(object : Callback<ApiResponse> {
-                override fun onResponse(call: Call<ApiResponse>?, response: Response<ApiResponse>?) {
-                    Log.d("$TAG/onResponse", "Request success.")
-                    Log.d("$TAG/onResponse", response?.toString())
 
-                    val apiResponse: ApiResponse? = response?.body()
-                    Log.d("$TAG/onResponse", apiResponse?.result)
+        apiService.getCapability()
+            .makeCall {
+                onSuccess = { apiResponse ->
+                    netWorkError.postValue(null)
+                    netWorkFailure.postValue(null)
+                    Log.d(TAG, apiResponse?.info?.modelName)
                 }
-
-                override fun onFailure(call: Call<ApiResponse>?, t: Throwable?) {
-                    Log.d("$TAG/onResponse", "Request failure.")
-                    Log.e("$TAG/onFailure", call.toString())
-                    Log.e("$TAG/onFailure", t?.message)
+                onError = { call, response ->
+                    netWorkError.postValue(response?.message())
                 }
-            })
+                onFailure = { call, t ->
+                    netWorkFailure.postValue(t?.message)
+                }
+            }
     }
 }

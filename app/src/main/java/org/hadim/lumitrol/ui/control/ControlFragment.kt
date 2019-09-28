@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import org.hadim.lumitrol.R
 import org.hadim.lumitrol.base.BaseFragment
-import javax.inject.Inject
 
 class ControlFragment : BaseFragment() {
 
@@ -15,8 +14,8 @@ class ControlFragment : BaseFragment() {
         const val TAG: String = "ControlFragment"
     }
 
-    @Inject
-    lateinit var controlViewModel: ControlViewModel
+//    @Inject
+//    lateinit var controlViewModel: ControlViewModel
 
     override fun layoutRes(): Int {
         return R.layout.fragment_control

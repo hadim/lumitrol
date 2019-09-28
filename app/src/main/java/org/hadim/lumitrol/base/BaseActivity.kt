@@ -2,11 +2,11 @@ package org.hadim.lumitrol.base
 
 import android.os.Bundle
 import androidx.annotation.LayoutRes
+import androidx.appcompat.app.AppCompatActivity
 import butterknife.ButterKnife
-import dagger.android.support.DaggerAppCompatActivity
 
 
-abstract class BaseActivity : DaggerAppCompatActivity() {
+abstract class BaseActivity : AppCompatActivity() {
 
     @LayoutRes
     protected abstract fun layoutRes(): Int

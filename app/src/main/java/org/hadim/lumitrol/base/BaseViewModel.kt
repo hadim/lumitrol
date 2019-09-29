@@ -6,5 +6,5 @@ import org.hadim.lumitrol.model.Repository
 
 abstract class BaseViewModel(
     protected val savedStateHandle: SavedStateHandle,
-    protected val repository: Repository
+    val repository: Repository
 ) : ViewModel()

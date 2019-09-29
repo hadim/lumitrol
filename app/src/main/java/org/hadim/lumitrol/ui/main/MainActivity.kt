@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.widget.Toolbar
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.lifecycle.Observer
 import androidx.navigation.Navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
@@ -14,6 +13,8 @@ import butterknife.BindView
 import com.google.android.material.navigation.NavigationView
 import org.hadim.lumitrol.R
 import org.hadim.lumitrol.base.BaseActivity
+import org.hadim.lumitrol.model.Repository
+import org.hadim.lumitrol.model.api.ApiServiceFactory
 
 
 class MainActivity : BaseActivity<MainActivityViewModel>() {
@@ -58,15 +59,9 @@ class MainActivity : BaseActivity<MainActivityViewModel>() {
             navView.setupWithNavController(navController)
 
             Log.d("$TAG/onCreate", "Init MainActivity")
-
-            viewModel.netWorkError.observe(this, Observer { netWorkError ->
-                Log.e(TAG, netWorkError)
-            })
-
-            viewModel.netWorkFailure.observe(this, Observer { netWorkFailure ->
-                Log.e(TAG, netWorkFailure)
-            })
         }
+
+        var repo = Repository(this.application, ApiServiceFactory())
     }
 
     override fun onSupportNavigateUp(): Boolean {

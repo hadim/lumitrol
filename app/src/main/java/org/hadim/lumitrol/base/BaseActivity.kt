@@ -10,9 +10,6 @@ import dagger.android.support.DaggerAppCompatActivity
 
 abstract class BaseActivity<T : ViewModel> : DaggerAppCompatActivity() {
 
-//    @Inject
-//    lateinit var viewModelFactory: ViewModelFactory
-
     protected val viewModel: T by lazy(LazyThreadSafetyMode.NONE) {
         ViewModelProvider(this).get(viewModelClass)
     }

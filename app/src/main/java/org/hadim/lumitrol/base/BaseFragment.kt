@@ -5,10 +5,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.LayoutRes
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import butterknife.ButterKnife
 import butterknife.Unbinder
+import com.google.android.material.snackbar.Snackbar
 import dagger.android.support.DaggerFragment
+import org.hadim.lumitrol.R
 import org.hadim.lumitrol.di.viewmodel.ViewModelFactory
 import javax.inject.Inject
 
@@ -29,16 +32,22 @@ abstract class BaseFragment<T : BaseViewModel> : DaggerFragment() {
 
     private var unbinder: Unbinder? = null
 
+    private lateinit var root: View
+
+    private var errorSnackBar: Snackbar? = null
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
 
         // Get root view of the fragment/view
-        val root = inflater.inflate(layoutId, container, false)
+        root = inflater.inflate(layoutId, container, false)
 
         // Bind views
         unbinder = ButterKnife.bind(this, root)
+
+        //installErrorObservers()
 
         return root
     }
@@ -49,5 +58,44 @@ abstract class BaseFragment<T : BaseViewModel> : DaggerFragment() {
             unbinder!!.unbind()
             unbinder = null
         }
+    }
+
+    protected fun showError(errorMessage: String) {
+        errorSnackBar = Snackbar.make(root, errorMessage, Snackbar.LENGTH_INDEFINITE)
+            .apply {
+                setAction(getString(R.string.dismiss)) {
+                    dismiss()
+                }
+                show()
+            }
+    }
+
+    protected fun hideError() {
+        errorSnackBar?.dismiss()
+    }
+
+    private fun installErrorObservers() {
+        viewModel.repository.networkError.observe(this, Observer {
+            if (it != null) {
+                showError("Network Error: $it")
+            } else {
+                hideError()
+            }
+        })
+        viewModel.repository.networkFailure.observe(this, Observer {
+            if (it != null) {
+                showError("Network Failure: $it")
+            } else {
+                hideError()
+            }
+        })
+        viewModel.repository.responseError.observe(this, Observer {
+            if (it != null) {
+                showError("Network Failure: $it")
+            } else {
+                hideError()
+            }
+        })
+
     }
 }

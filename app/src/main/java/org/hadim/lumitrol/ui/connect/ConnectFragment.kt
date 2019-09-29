@@ -67,11 +67,12 @@ class ConnectFragment : BaseFragment<ConnectViewModel>() {
     @OnClick(R.id.manual_connect_button)
     fun manualConnection() {
         Log.d("$TAG/manualConnection", "clicked")
-        //connectViewModel.ping()
+        viewModel.repository.isIpManual.postValue(true)
     }
 
     @OnClick(R.id.connect_button)
     fun automaticConnection() {
         Log.d("$TAG/automaticConnection", "clicked")
+        viewModel.repository.isIpManual.postValue(false)
     }
 }

@@ -7,6 +7,7 @@ buildscript {
         daggerVersion = '2.24'
         navigationVersion = '2.1.0'
         materialVersion = '1.1.0-alpha10'
+        lifecycleVersion = '2.2.0-alpha05'
     }
 
     repositories {
@@ -23,7 +24,7 @@ allprojects {
     repositories {
         google()
         jcenter()
-        maven { url 'https://www.jitpack.io' }
+        // maven { url 'https://www.jitpack.io' }
     }
 }
 

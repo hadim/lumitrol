@@ -23,7 +23,6 @@ class ConnectViewModel @AssistedInject constructor(
     }
 
     fun ping() {
-        Log.e(TAG, repository.toString())
     }
 
     @AssistedInject.Factory

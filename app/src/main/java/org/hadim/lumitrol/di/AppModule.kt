@@ -25,7 +25,7 @@ class AppModule {
 
     @Singleton
     @Provides
-    fun provideRepository(apiServiceFactory: ApiServiceFactory): Repository {
-        return Repository(apiServiceFactory)
+    fun provideRepository(appication: Application, apiServiceFactory: ApiServiceFactory): Repository {
+        return Repository(appication, apiServiceFactory)
     }
 }

@@ -25,4 +25,5 @@
     <string name="status_tab">Connection Status</string>
     <string name="connection_status_none">None</string>
     <string name="control_capture" tools:keep="@string/control_capture">Take Photo</string>
+    <string name="dismiss">Dismiss</string>
 </resources>

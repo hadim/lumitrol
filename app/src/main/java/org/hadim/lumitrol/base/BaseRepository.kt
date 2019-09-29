@@ -1,7 +1,6 @@
 package org.hadim.lumitrol.base
 
 import android.util.Log
-import org.hadim.lumitrol.model.Repository
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -40,9 +39,9 @@ abstract class BaseRepository {
         }
 
         override fun onFailure(call: Call<T>, t: Throwable) {
-            Log.d("${Repository.TAG}/makeCall", "Request failure.")
-            Log.d("${Repository.TAG}/makeCall", "Request: ${call.request()}")
-            Log.d("${Repository.TAG}/makeCall", "Message: ${t.message}")
+            Log.d("$TAG/makeCall", "Request failure.")
+            Log.d("$TAG/makeCall", "Request: ${call.request()}")
+            Log.d("$TAG/makeCall", "Message: ${t.message}")
             onFailure?.invoke(call, t)
         }
     }

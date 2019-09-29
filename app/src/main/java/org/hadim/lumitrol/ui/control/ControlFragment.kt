@@ -8,18 +8,14 @@ import android.view.ViewGroup
 import org.hadim.lumitrol.R
 import org.hadim.lumitrol.base.BaseFragment
 
-class ControlFragment : BaseFragment() {
+class ControlFragment : BaseFragment<ControlViewModel>() {
 
     companion object {
         const val TAG: String = "ControlFragment"
     }
 
-//    @Inject
-//    lateinit var controlViewModel: ControlViewModel
-
-    override fun layoutRes(): Int {
-        return R.layout.fragment_control
-    }
+    override val viewModelClass: Class<ControlViewModel> = ControlViewModel::class.java
+    override val layoutId: Int = R.layout.fragment_control
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -27,10 +23,9 @@ class ControlFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
 
-        val root = super.onCreateView(inflater, container, savedInstanceState)
-
+        val view = super.onCreateView(inflater, container, savedInstanceState)
         Log.d("$TAG/onCreateView", "Init ControlFragment")
 
-        return root
+        return view
     }
 }

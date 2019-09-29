@@ -2,10 +2,17 @@ package org.hadim.lumitrol.ui.connect
 
 import android.util.Log
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
+import com.squareup.inject.assisted.Assisted
+import com.squareup.inject.assisted.AssistedInject
+import org.hadim.lumitrol.base.BaseViewModel
+import org.hadim.lumitrol.di.viewmodel.ViewModelAssistedFactory
+import org.hadim.lumitrol.model.Repository
 
 
-class ConnectViewModel(private var savedStateHandle: SavedStateHandle) : ViewModel() {
+class ConnectViewModel @AssistedInject constructor(
+    @Assisted savedStateHandle: SavedStateHandle,
+    repository: Repository
+) : BaseViewModel(savedStateHandle, repository) {
 
     companion object {
         const val TAG: String = "ConnectViewModel"
@@ -16,7 +23,9 @@ class ConnectViewModel(private var savedStateHandle: SavedStateHandle) : ViewMod
     }
 
     fun ping() {
-        //Log.e(TAG, repositoryFactory.toString())
+        Log.e(TAG, repository.toString())
     }
 
+    @AssistedInject.Factory
+    interface Factory : ViewModelAssistedFactory<ConnectViewModel>
 }

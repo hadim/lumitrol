@@ -2,11 +2,15 @@ package org.hadim.lumitrol.ui.main
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 
 
-class MainActivityViewModel(private var savedStateHandle: SavedStateHandle) : ViewModel() {
+//class MainActivityViewModel @AssistedInject constructor(
+//    @Assisted savedStateHandle: SavedStateHandle,
+//    repository: Repository
+//) : BaseViewModel(savedStateHandle, repository) {
+
+class MainActivityViewModel : ViewModel() {
 
     companion object {
         const val TAG: String = "MainActivityViewModel"
@@ -15,8 +19,11 @@ class MainActivityViewModel(private var savedStateHandle: SavedStateHandle) : Vi
         private const val NETWORK_FAILURE = "netWorkFailure"
     }
 
-    val netWorkError: MutableLiveData<String?> = savedStateHandle.getLiveData(NETWORK_ERROR)
-    val netWorkFailure: MutableLiveData<String?> = savedStateHandle.getLiveData(NETWORK_FAILURE)
+//    @Inject
+//    lateinit var repository: Repository
+
+    val netWorkError: MutableLiveData<String?> = MutableLiveData()  //savedStateHandle.getLiveData(NETWORK_ERROR)
+    val netWorkFailure: MutableLiveData<String?> = MutableLiveData()  //savedStateHandle.getLiveData(NETWORK_FAILURE)
 
     init {
         Log.d("$TAG/init", "Init MainActivityViewModel")
@@ -24,6 +31,9 @@ class MainActivityViewModel(private var savedStateHandle: SavedStateHandle) : Vi
 
     fun ping() {
         Log.d("$TAG/ping", "ping")
+        // Log.e("$TAG/ping", repository.toString())
     }
-
+//
+//    @AssistedInject.Factory
+//    interface Factory : ViewModelAssistedFactory<MainActivityViewModel>
 }

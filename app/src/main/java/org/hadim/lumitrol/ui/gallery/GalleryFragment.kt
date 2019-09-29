@@ -8,18 +8,14 @@ import android.view.ViewGroup
 import org.hadim.lumitrol.R
 import org.hadim.lumitrol.base.BaseFragment
 
-class GalleryFragment : BaseFragment() {
+class GalleryFragment : BaseFragment<GalleryViewModel>() {
 
     companion object {
         const val TAG: String = "GalleryFragment"
     }
 
-//    @Inject
-//    lateinit var galleryViewModel: GalleryViewModel
-
-    override fun layoutRes(): Int {
-        return R.layout.fragment_gallery
-    }
+    override val viewModelClass: Class<GalleryViewModel> = GalleryViewModel::class.java
+    override val layoutId: Int = R.layout.fragment_gallery
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -27,10 +23,9 @@ class GalleryFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
 
-        val root = super.onCreateView(inflater, container, savedInstanceState)
-
+        val view = super.onCreateView(inflater, container, savedInstanceState)
         Log.d("$TAG/onCreateView", "Init GalleryFragment")
 
-        return root
+        return view
     }
 }

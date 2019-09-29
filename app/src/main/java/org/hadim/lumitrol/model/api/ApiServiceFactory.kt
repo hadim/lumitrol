@@ -6,12 +6,9 @@ import org.simpleframework.xml.core.Persister
 import retrofit2.Retrofit
 import retrofit2.converter.simplexml.SimpleXmlConverterFactory
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
-import javax.inject.Singleton
 
 
-@Singleton
-class ApiServiceFactory @Inject constructor() {
+class ApiServiceFactory {
 
     var timeout: Long = 10  // seconds
 

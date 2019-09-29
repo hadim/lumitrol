@@ -2,11 +2,9 @@ package org.hadim.lumitrol.ui.main
 
 import android.os.Bundle
 import android.util.Log
-import androidx.activity.viewModels
 import androidx.appcompat.widget.Toolbar
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
-import androidx.lifecycle.SavedStateViewModelFactory
 import androidx.navigation.Navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
@@ -14,32 +12,29 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import butterknife.BindView
 import com.google.android.material.navigation.NavigationView
+import org.hadim.lumitrol.R
 import org.hadim.lumitrol.base.BaseActivity
 
 
-class MainActivity : BaseActivity() {
+class MainActivity : BaseActivity<MainActivityViewModel>() {
 
     companion object {
         const val TAG: String = "MainActivity"
     }
 
-    private val mainActivityViewModel: MainActivityViewModel
-            by viewModels { SavedStateViewModelFactory(this.application, this) }
+    override val viewModelClass: Class<MainActivityViewModel> = MainActivityViewModel::class.java
+    override val layoutId: Int = R.layout.activity_main
 
-    @BindView(org.hadim.lumitrol.R.id.toolbar)
+    @BindView(R.id.toolbar)
     lateinit var toolbar: Toolbar
 
-    @BindView(org.hadim.lumitrol.R.id.drawer_layout)
+    @BindView(R.id.drawer_layout)
     lateinit var drawerLayout: DrawerLayout
 
-    @BindView(org.hadim.lumitrol.R.id.nav_view)
+    @BindView(R.id.nav_view)
     lateinit var navView: NavigationView
 
     private lateinit var appBarConfiguration: AppBarConfiguration
-
-    override fun layoutRes(): Int {
-        return org.hadim.lumitrol.R.layout.activity_main
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,31 +46,31 @@ class MainActivity : BaseActivity() {
 
             // Populate navigation menu
             val topLevelDestinationIds = setOf(
-                org.hadim.lumitrol.R.id.nav_connect,
-                org.hadim.lumitrol.R.id.nav_control,
-                org.hadim.lumitrol.R.id.nav_gallery
+                R.id.nav_connect,
+                R.id.nav_control,
+                R.id.nav_gallery
             )
             appBarConfiguration = AppBarConfiguration(topLevelDestinationIds, drawerLayout)
 
             // Setup navigation
-            val navController = findNavController(this, org.hadim.lumitrol.R.id.nav_host_fragment)
+            val navController = findNavController(this, R.id.nav_host_fragment)
             setupActionBarWithNavController(navController, appBarConfiguration)
             navView.setupWithNavController(navController)
 
             Log.d("$TAG/onCreate", "Init MainActivity")
 
-            mainActivityViewModel.netWorkError.observe(this, Observer { netWorkError ->
-                Log.d(TAG, netWorkError)
+            viewModel.netWorkError.observe(this, Observer { netWorkError ->
+                Log.e(TAG, netWorkError)
             })
 
-            mainActivityViewModel.netWorkFailure.observe(this, Observer { netWorkFailure ->
-                Log.d(TAG, netWorkFailure)
+            viewModel.netWorkFailure.observe(this, Observer { netWorkFailure ->
+                Log.e(TAG, netWorkFailure)
             })
         }
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        val navController = findNavController(this, org.hadim.lumitrol.R.id.nav_host_fragment)
+        val navController = findNavController(this, R.id.nav_host_fragment)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 }

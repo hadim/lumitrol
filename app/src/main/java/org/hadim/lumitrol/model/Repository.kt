@@ -2,24 +2,17 @@ package org.hadim.lumitrol.model
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
-import com.squareup.inject.assisted.AssistedInject
 import org.hadim.lumitrol.base.BaseRepository
 import org.hadim.lumitrol.model.api.ApiService
 import org.hadim.lumitrol.model.api.ApiServiceFactory
 
 
-class Repository @AssistedInject constructor() : BaseRepository() {
+class Repository(private var apiServiceFactory: ApiServiceFactory) : BaseRepository() {
 
     companion object {
         const val TAG: String = "Repository"
     }
 
-    @AssistedInject.Factory
-    interface Factory {
-        fun create(): Repository
-    }
-
-    private lateinit var apiServiceFactory: ApiServiceFactory
     private lateinit var apiService: ApiService
 
     val netWorkError: MutableLiveData<String?> = MutableLiveData()

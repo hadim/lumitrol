@@ -136,7 +136,7 @@ class ConnectFragment : BaseFragment<ConnectViewModel>() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
 
-        viewModel.repository.wifiState.observe(this, Observer() { wifiState ->
+        viewModel.repository.wifiState.observe(this, Observer { wifiState ->
             if (wifiState == WifiState.Connected) {
                 connectionStatusWIFIIcon.setImageResource(android.R.drawable.presence_online)
                 connectionStatusWIFITextView.text = "ON"
@@ -146,7 +146,7 @@ class ConnectFragment : BaseFragment<ConnectViewModel>() {
             }
         })
 
-        viewModel.repository.ipAddress.observe(this, Observer() { ipAddress ->
+        viewModel.repository.ipAddress.observe(this, Observer { ipAddress ->
             ipAddress?.let {
                 connectionStatusIPTextView.text = ipAddress
             } ?: run {
@@ -154,7 +154,7 @@ class ConnectFragment : BaseFragment<ConnectViewModel>() {
             }
         })
 
-        viewModel.repository.isIpReachable.observe(this, Observer() { isIpReachable ->
+        viewModel.repository.isIpReachable.observe(this, Observer { isIpReachable ->
             if (isIpReachable == true) {
                 connectionStatusIPIcon.setImageResource(android.R.drawable.presence_online)
             } else {
@@ -162,7 +162,7 @@ class ConnectFragment : BaseFragment<ConnectViewModel>() {
             }
         })
 
-        viewModel.repository.isCameraDetected.observe(this, Observer() { isCameraDetected ->
+        viewModel.repository.isCameraDetected.observe(this, Observer { isCameraDetected ->
             if (isCameraDetected == true) {
                 connectionStatusCameraIcon.setImageResource(android.R.drawable.presence_online)
                 connectionStatusCameraTextView.text = "OK"
@@ -172,7 +172,7 @@ class ConnectFragment : BaseFragment<ConnectViewModel>() {
             }
         })
 
-        viewModel.repository.cameraModelName.observe(this, Observer() { cameraModelName ->
+        viewModel.repository.cameraModelName.observe(this, Observer { cameraModelName ->
             cameraModelName?.let {
                 connectionStatusModelNameTextView.text = cameraModelName
             } ?: run {

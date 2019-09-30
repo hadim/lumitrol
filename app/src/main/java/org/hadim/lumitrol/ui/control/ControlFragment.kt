@@ -89,7 +89,7 @@ class ControlFragment : BaseFragment<ControlViewModel>() {
 
     private fun startStream() {
 
-        if (::streamPlayer.isInitialized && streamPlayer?.isPlaying) return
+        if (::streamPlayer.isInitialized && streamPlayer.isPlaying) return
 
         var localUdpPort = 41099
         var ipAddress = viewModel.repository.ipAddress.value
@@ -126,12 +126,12 @@ class ControlFragment : BaseFragment<ControlViewModel>() {
 
     private fun stopStream() {
 
-        if (::streamPlayer.isInitialized && !streamPlayer?.isPlaying) return
+        if (::streamPlayer.isInitialized && !streamPlayer.isPlaying) return
 
         try {
             viewModel.repository.stopStream()
-            streamTimer?.cancel()
-            if (::streamPlayer.isInitialized) streamPlayer?.release()
+            streamTimer.cancel()
+            if (::streamPlayer.isInitialized) streamPlayer.release()
         } catch (e: InterruptedException) {
             Log.e("ControlFragment/stopStream", "Error during stream interruption.")
             Log.e("ControlFragment/stopStream", e.message)

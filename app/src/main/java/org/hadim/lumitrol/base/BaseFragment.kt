@@ -12,6 +12,7 @@ import butterknife.ButterKnife
 import butterknife.Unbinder
 import com.google.android.material.snackbar.Snackbar
 import org.hadim.lumitrol.R
+import org.hadim.lumitrol.utils.forEachChildView
 
 
 abstract class BaseFragment<T : BaseViewModel> : Fragment() {
@@ -27,7 +28,7 @@ abstract class BaseFragment<T : BaseViewModel> : Fragment() {
 
     private var unbinder: Unbinder? = null
 
-    private lateinit var root: View
+    protected lateinit var root: View
 
     private var errorSnackBar: Snackbar? = null
 
@@ -42,8 +43,6 @@ abstract class BaseFragment<T : BaseViewModel> : Fragment() {
         // Bind views
         unbinder = ButterKnife.bind(this, root)
 
-        installErrorObservers()
-
         return root
     }
 
@@ -56,6 +55,7 @@ abstract class BaseFragment<T : BaseViewModel> : Fragment() {
     }
 
     protected fun showError(errorMessage: String) {
+        errorSnackBar?.dismiss()
         errorSnackBar = Snackbar.make(root, errorMessage, Snackbar.LENGTH_INDEFINITE)
             .apply {
                 setAction(getString(R.string.dismiss)) {
@@ -67,6 +67,14 @@ abstract class BaseFragment<T : BaseViewModel> : Fragment() {
 
     protected fun hideError() {
         errorSnackBar?.dismiss()
+    }
+
+    protected fun disableFragment() {
+        root.forEachChildView { it.isEnabled = false }
+    }
+
+    protected fun enableFragment() {
+        root.forEachChildView { it.isEnabled = true }
     }
 
     private fun installErrorObservers() {

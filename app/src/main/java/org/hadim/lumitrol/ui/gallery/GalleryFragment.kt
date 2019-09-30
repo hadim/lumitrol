@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Observer
 import org.hadim.lumitrol.R
 import org.hadim.lumitrol.base.BaseFragment
 
@@ -26,6 +27,21 @@ class GalleryFragment : BaseFragment<GalleryViewModel>() {
         val view = super.onCreateView(inflater, container, savedInstanceState)
         Log.d("$TAG/onCreateView", "Init GalleryFragment")
 
+        installObservers()
+        viewModel.enablePlayMode()
+
         return view
+    }
+
+    private fun installObservers() {
+
+        viewModel.repository.isCameraDetected.observe(this, Observer { isCameraDetected ->
+            if (isCameraDetected == true) {
+                enableFragment()
+            } else {
+                disableFragment()
+            }
+        })
+
     }
 }

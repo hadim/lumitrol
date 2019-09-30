@@ -18,4 +18,8 @@ class GalleryViewModel(
     init {
         Log.d("$TAG/init", "Init GalleryViewModel")
     }
+
+    fun enablePlayMode() {
+        repository.playmode()
+    }
 }

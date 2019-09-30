@@ -19,7 +19,7 @@ abstract class BaseRepository {
     }
 
     class CallBackKotlin<T> : Callback<T> {
-        var onSuccess: ((T?) -> Unit)? = null
+        var onSuccess: ((T?, Call<T>?) -> Unit)? = null
         var onError: ((Call<T>?, Response<T>?) -> Unit)? = null
         var onFailure: ((Call<T>?, Throwable?) -> Unit)? = null
 
@@ -28,7 +28,7 @@ abstract class BaseRepository {
                 Log.d("$TAG/makeCall", "Request success.")
                 Log.d("$TAG/makeCall", "Request: $response")
                 Log.d("$TAG/makeCall", "Message: ${response.message()}")
-                onSuccess?.invoke(response.body())
+                onSuccess?.invoke(response.body(), call)
             } else {
                 Log.d("$TAG/makeCall", "Request error.")
                 Log.d("$TAG/makeCall", "Request: $response")

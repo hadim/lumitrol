@@ -1,7 +1,5 @@
-package org.hadim.lumitrol.util
+package org.hadim.lumitrol.utils
 
-import android.graphics.Color
-import android.graphics.PorterDuff
 import android.view.View
 import android.view.ViewGroup
 

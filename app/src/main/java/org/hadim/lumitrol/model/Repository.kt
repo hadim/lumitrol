@@ -3,6 +3,7 @@ package org.hadim.lumitrol.model
 import android.app.Application
 import android.content.Context
 import android.net.wifi.WifiManager
+import android.os.Looper
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import org.hadim.lumitrol.base.BaseRepository
@@ -69,7 +70,7 @@ class Repository(
         Log.d("$TAG/init", "Init Repository")
 
         checkAlive()
-        //setupCheckAlive()
+        setupCheckAlive()
     }
 
     fun buildApiService(force: Boolean? = false) {
@@ -81,17 +82,20 @@ class Repository(
     }
 
     private fun runCall(
-        call: Call<ApiResponseCapability>?,
+        call: Call<out ApiResponse>?,
         success: ((apiResponse: ApiResponse?) -> Unit)?,
-        error: ((apiResponse: ApiResponse?) -> Unit)?
+        error: ((apiResponse: ApiResponse?, call: Call<out ApiResponse>?) -> Unit)?
     ) {
 
         buildApiService()
         if (apiService != null && call != null) {
             call.makeCall {
-                onSuccess = { apiResponse ->
-                    networkError.postValue(null)
-                    networkFailure.postValue(null)
+                onSuccess = { apiResponse, call ->
+
+                    putValue(networkError, null)
+                    putValue(networkFailure, null)
+                    putValue(responseError, null)
+
                     success?.let {
                         apiResponse?.let { response ->
                             response.result?.let { result ->
@@ -99,23 +103,24 @@ class Repository(
                                     success(apiResponse)
                                 } else {
                                     Log.e("$TAG/runCall", "Response Error: $result.")
-                                    error?.let { error(apiResponse) }
+                                    putValue(responseError, result)
+                                    error?.let { error(apiResponse, call) }
                                 }
                             } ?: run {
-                                error?.let { error(apiResponse) }
+                                error?.let { error(apiResponse, call) }
                             }
                         } ?: run {
-                            error?.let { error(apiResponse) }
+                            error?.let { error(apiResponse, call) }
                         }
                     }
-                    onError = { _, response ->
-                        networkError.postValue(response?.message())
-                        error?.let { error(response?.body()) }
-                    }
-                    onFailure = { _, t ->
-                        networkFailure.postValue(t?.message)
-                        error?.let { error(null) }
-                    }
+                }
+                onError = { call, response ->
+                    putValue(networkError, response?.message())
+                    error?.let { error(response?.body(), call) }
+                }
+                onFailure = { call, t ->
+                    putValue(networkFailure, t?.message)
+                    error?.let { error(null, call) }
                 }
             }
         } else {
@@ -136,27 +141,31 @@ class Repository(
         checkWifiState()
         if (wifiState.value == WifiState.Connected) {
             checkIpReachable()
+            if (isIpReachable.value == false) {
+                putValue(isCameraDetected, false)
+                putValue(cameraModelName, null)
+            }
         } else {
-            isIpReachable.value = false
-            isCameraDetected.value = false
-            cameraModelName.value = null
+            putValue(isIpReachable, false)
+            putValue(isCameraDetected, false)
+            putValue(cameraModelName, null)
         }
 
-        if (isIpReachable.value == true) {
-            var stateString = "Connection State:" +
-                    "\n\tWifi: ${wifiState.value}" +
-                    "\n\tIP: ${ipAddress.value}" +
-                    "\n\tReachable: ${isIpReachable.value}" +
-                    "\n\tCamera detected: ${isCameraDetected.value}"
-            Log.d("$TAG/runCall", stateString)
-        }
+//        if (isIpReachable.value == true) {
+//            var stateString = "Connection State:" +
+//                    "\n\tWifi: ${wifiState.value}" +
+//                    "\n\tIP: ${ipAddress.value}" +
+//                    "\n\tReachable: ${isIpReachable.value}" +
+//                    "\n\tCamera detected: ${isCameraDetected.value}"
+//            Log.d("$TAG/runCall", stateString)
+//        }
     }
 
     fun resetIpAddress() {
-        ipAddress.value = null
-        isIpReachable.value = false
-        isCameraDetected.value = false
-        cameraModelName.value = null
+        putValue(ipAddress, null)
+        putValue(isIpReachable, false)
+        putValue(isCameraDetected, false)
+        putValue(cameraModelName, null)
     }
 
     private fun checkCameraDetected() {
@@ -164,26 +173,30 @@ class Repository(
         runCall(apiService?.getCapability(),
             success = { response ->
                 var rep = response as ApiResponseCapability
-                isCameraDetected.postValue(true)
-                cameraModelName.postValue(rep.info.modelName)
+                putValue(isCameraDetected, true)
+                putValue(cameraModelName, rep.info.modelName)
             },
-            error = {
+            error = { _, _ ->
                 isCameraDetected.postValue(false)
+                putValue(isCameraDetected, false)
+                putValue(cameraModelName, null)
             })
     }
 
     private fun checkIpReachable() {
         ipAddress.value?.let {
             val inetAddress = java.net.InetAddress.getByName(it)
+
             Timer().schedule(0) {
                 var isReachable = inetAddress.isReachable(IS_REACHABLE_TIMEOUT)
-                isIpReachable.postValue(isReachable)
+                putValue(isIpReachable, isReachable)
+
                 if (isReachable) {
                     checkCameraDetected()
                 }
             }
         } ?: run {
-            isIpReachable.value = false
+            putValue(isIpReachable, false)
         }
     }
 
@@ -193,13 +206,63 @@ class Repository(
 
             if (wifiManager.isWifiEnabled) {
                 if (wifiManager.connectionInfo.bssid != null) {
-                    wifiState.value = WifiState.Connected
+                    putValue(wifiState, WifiState.Connected)
                 } else {
-                    wifiState.value = WifiState.EnabledNotConnected
+                    putValue(wifiState, WifiState.EnabledNotConnected)
                 }
             } else {
-                wifiState.value = WifiState.Disabled
+                putValue(wifiState, WifiState.Disabled)
             }
         }
+    }
+
+    private fun <T> putValue(data: MutableLiveData<T>, value: T) {
+        if (Looper.getMainLooper().isCurrentThread)
+            data.value = value
+        else
+            data.postValue(value)
+    }
+
+    fun recmode() {
+        runCall(apiService?.recmode(), null, null)
+    }
+
+    fun playmode() {
+        runCall(apiService?.playmode(), null, null)
+    }
+
+    fun capture() {
+        Log.d("$TAG/capture", "")
+        // TODO: handle error.
+        recmode()
+        runCall(apiService?.capture(), null, null)
+    }
+
+    fun startRecord() {
+        Log.d("$TAG/capture", "")
+        // TODO: handle error.
+        recmode()
+        runCall(apiService?.startRecord(), null, null)
+    }
+
+    fun stopRecord() {
+        Log.d("$TAG/capture", "")
+        // TODO: handle error.
+        recmode()
+        runCall(apiService?.stopRecord(), null, null)
+    }
+
+    fun startStream(port: Int) {
+        Log.d("$TAG/capture", "")
+        // TODO: handle error.
+        recmode()
+        runCall(apiService?.startStream(port), null, null)
+    }
+
+    fun stopStream() {
+        Log.d("$TAG/capture", "")
+        // TODO: handle error.
+        recmode()
+        runCall(apiService?.stopStream(), null, null)
     }
 }

@@ -18,7 +18,4 @@ class ConnectViewModel(
     init {
         Log.d("$TAG/init", "Init ConnectViewModel")
     }
-
-    fun ping() {
-    }
 }

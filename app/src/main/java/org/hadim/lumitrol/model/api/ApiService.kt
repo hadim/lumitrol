@@ -2,7 +2,7 @@ package org.hadim.lumitrol.model.api
 
 import retrofit2.Call
 import retrofit2.http.GET
-import retrofit2.http.Path
+import retrofit2.http.Query
 
 
 /*
@@ -32,6 +32,9 @@ interface ApiService {
 
     // mode = camcmd
 
+    @GET("cam.cgi?mode=camcmd&value=capture")
+    fun capture(): Call<ApiResponseSimple>
+
     @GET("cam.cgi?mode=camcmd&value=recmode")
     fun recmode(): Call<ApiResponseSimple>
 
@@ -52,20 +55,20 @@ interface ApiService {
 
     // mode = stream
 
-    @GET("cam.cgi?mode=startstream&value={port}")
-    fun startStream(@Path("port") port: Int): Call<ApiResponseSimple>
+    @GET("cam.cgi?mode=startstream")
+    fun startStream(@Query("value") port: Int): Call<ApiResponseSimple>
 
     @GET("cam.cgi?mode=stopstream")
-    fun stopStream(@Path("port") port: Int): Call<ApiResponseSimple>
+    fun stopStream(): Call<ApiResponseSimple>
 
     // Focus (mode = camctrl)
 
     // `value` can be { start, continue, stop }
     // `value2` must be `X/Y`
-    @GET("cam.cgi?mode=camctrl&type=touch_trace&value={value}&value2={value2}")
+    @GET("cam.cgi?mode=camctrl&type=touch_trace")
     fun touchFocus(
-        @Path("value") value: String,
-        @Path("value2") value2: String
+        @Query("value") value: String,
+        @Query("value2") value2: String
     ): Call<ApiResponseSimple>
 
 }

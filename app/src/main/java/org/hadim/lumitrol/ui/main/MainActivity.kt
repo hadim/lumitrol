@@ -94,7 +94,7 @@ class MainActivity : BaseActivity<MainActivityViewModel>() {
         val filter = IntentFilter()
         filter.addAction("android.net.wifi.WIFI_STATE_CHANGED")
         filter.addAction("android.net.wifi.STATE_CHANGE")
-        registerReceiver(WifiBroadcastReceiver(), filter)
+        application.registerReceiver(WifiBroadcastReceiver(), filter)
     }
 
     private fun enableNetworkOnWifi() {

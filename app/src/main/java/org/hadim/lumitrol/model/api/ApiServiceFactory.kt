@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit
 
 class ApiServiceFactory {
 
-    var timeout: Long = 10  // seconds
+    private var timeout: Long = 3  // seconds
 
     private fun getClient(): OkHttpClient {
         return OkHttpClient().newBuilder()

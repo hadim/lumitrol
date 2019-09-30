@@ -26,4 +26,6 @@
     <string name="connection_status_none">None</string>
     <string name="control_capture" tools:keep="@string/control_capture">Take Photo</string>
     <string name="dismiss">Dismiss</string>
+    <string name="noIpAddressText">None</string>
+    <string name="reset_ip_button_text">Reset</string>
 </resources>

@@ -1,5 +1,13 @@
 package org.hadim.lumitrol.ui.main
 
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkCapabilities
+import android.net.NetworkRequest
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.widget.Toolbar
@@ -14,7 +22,6 @@ import com.google.android.material.navigation.NavigationView
 import org.hadim.lumitrol.R
 import org.hadim.lumitrol.base.BaseActivity
 import org.hadim.lumitrol.model.Repository
-import org.hadim.lumitrol.model.api.ApiServiceFactory
 
 
 class MainActivity : BaseActivity<MainActivityViewModel>() {
@@ -25,6 +32,8 @@ class MainActivity : BaseActivity<MainActivityViewModel>() {
 
     override val viewModelClass: Class<MainActivityViewModel> = MainActivityViewModel::class.java
     override val layoutId: Int = R.layout.activity_main
+
+    private lateinit var repository: Repository
 
     @BindView(R.id.toolbar)
     lateinit var toolbar: Toolbar
@@ -39,6 +48,9 @@ class MainActivity : BaseActivity<MainActivityViewModel>() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Start the repository instance (singleton)
+        repository = Repository.getRepository(application)
 
         if (savedInstanceState == null) {
 
@@ -61,11 +73,44 @@ class MainActivity : BaseActivity<MainActivityViewModel>() {
             Log.d("$TAG/onCreate", "Init MainActivity")
         }
 
-        var repo = Repository(this.application, ApiServiceFactory())
+        enableNetworkOnWifi()
+        registerWifiChangeCallback()
     }
 
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(this, R.id.nav_host_fragment)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
+    }
+
+
+    private fun registerWifiChangeCallback() {
+
+        class WifiBroadcastReceiver : BroadcastReceiver() {
+            override fun onReceive(context: Context, intent: Intent) {
+                repository.checkAlive()
+            }
+        }
+
+        val filter = IntentFilter()
+        filter.addAction("android.net.wifi.WIFI_STATE_CHANGED")
+        filter.addAction("android.net.wifi.STATE_CHANGE")
+        registerReceiver(WifiBroadcastReceiver(), filter)
+    }
+
+    private fun enableNetworkOnWifi() {
+        val mConnectivityManager = application.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val request = NetworkRequest.Builder()
+        request.addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+
+        mConnectivityManager.requestNetwork(request.build(), object : ConnectivityManager.NetworkCallback() {
+            override fun onAvailable(network: Network) {
+                try {
+                    mConnectivityManager.bindProcessToNetwork(network)
+                } catch (e: Exception) {
+                    Log.e("MainActivity/forceNetworkOnWifi", e.message as String)
+                }
+
+            }
+        })
     }
 }

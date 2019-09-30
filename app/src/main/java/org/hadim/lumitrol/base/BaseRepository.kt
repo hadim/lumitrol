@@ -45,4 +45,5 @@ abstract class BaseRepository {
             onFailure?.invoke(call, t)
         }
     }
+
 }

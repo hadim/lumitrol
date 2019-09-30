@@ -2,13 +2,13 @@ package org.hadim.lumitrol.base
 
 import android.os.Bundle
 import androidx.annotation.LayoutRes
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import butterknife.ButterKnife
 import butterknife.Unbinder
-import dagger.android.support.DaggerAppCompatActivity
 
-abstract class BaseActivity<T : ViewModel> : DaggerAppCompatActivity() {
+abstract class BaseActivity<T : ViewModel> : AppCompatActivity() {
 
     protected val viewModel: T by lazy(LazyThreadSafetyMode.NONE) {
         ViewModelProvider(this).get(viewModelClass)

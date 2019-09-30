@@ -2,7 +2,6 @@ package org.hadim.lumitrol.model
 
 import android.app.Application
 import android.content.Context
-import android.net.InetAddresses
 import android.net.wifi.WifiManager
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
@@ -13,6 +12,7 @@ import org.hadim.lumitrol.model.api.ApiService
 import org.hadim.lumitrol.model.api.ApiServiceFactory
 import retrofit2.Call
 import java.util.*
+import kotlin.concurrent.schedule
 
 
 enum class WifiState {
@@ -22,14 +22,32 @@ enum class WifiState {
 }
 
 class Repository(
-    private var application: Application,
-    private var apiServiceFactory: ApiServiceFactory
+    var application: Application,
+    var apiServiceFactory: ApiServiceFactory
 ) : BaseRepository() {
 
     companion object {
         const val TAG: String = "Repository"
         const val CHECK_ALIVE_PERIOD: Long = 2000  // ms
-        const val IS_REACHABLE_TIMEOUT: Int = 2000  // ms
+        const val IS_REACHABLE_TIMEOUT: Int = 1000  // ms
+
+        // Singleton prevents multiple instances of database opening at the
+        // same time.
+        @Volatile
+        private var INSTANCE: Repository? = null
+
+        fun getRepository(application: Application): Repository {
+            val tempInstance = INSTANCE
+            if (tempInstance != null) {
+                return tempInstance
+            }
+            synchronized(this) {
+                val apiServiceFactory = ApiServiceFactory()
+                val instance = Repository(application, apiServiceFactory)
+                INSTANCE = instance
+                return instance
+            }
+        }
     }
 
     private var apiService: ApiService? = null
@@ -39,6 +57,7 @@ class Repository(
     var isIpManual: MutableLiveData<Boolean> = MutableLiveData(false)
     var isIpReachable: MutableLiveData<Boolean> = MutableLiveData(false)
     var isCameraDetected: MutableLiveData<Boolean> = MutableLiveData(false)
+    var cameraModelName: MutableLiveData<String?> = MutableLiveData()
 
     val networkError: MutableLiveData<String?> = MutableLiveData()
     val networkFailure: MutableLiveData<String?> = MutableLiveData()
@@ -48,7 +67,9 @@ class Repository(
 
     init {
         Log.d("$TAG/init", "Init Repository")
-        setupCheckAlive()
+
+        checkAlive()
+        //setupCheckAlive()
     }
 
     fun buildApiService(force: Boolean? = false) {
@@ -59,7 +80,7 @@ class Repository(
         }
     }
 
-    fun runCall(
+    private fun runCall(
         call: Call<ApiResponseCapability>?,
         success: ((apiResponse: ApiResponse?) -> Unit)?,
         error: ((apiResponse: ApiResponse?) -> Unit)?
@@ -103,7 +124,7 @@ class Repository(
 
     }
 
-    fun setupCheckAlive() {
+    private fun setupCheckAlive() {
         checkAliveTimer.schedule(object : TimerTask() {
             override fun run() {
                 checkAlive()
@@ -115,55 +136,69 @@ class Repository(
         checkWifiState()
         if (wifiState.value == WifiState.Connected) {
             checkIpReachable()
-            if (isIpReachable.value == true) {
-                checkCameraDetected()
-                if (isCameraDetected.value == true) {
-                    // Nothing to do, maybe add a callback ?
-                }
-            }
         } else {
-            isIpReachable.postValue(false)
-            isCameraDetected.postValue(false)
+            isIpReachable.value = false
+            isCameraDetected.value = false
+            cameraModelName.value = null
         }
 
-        var stateString = "Connection State:" +
-                "\n\tWifi: ${wifiState.value}" +
-                "\n\tIP: ${ipAddress.value}" +
-                "\n\tReachable: ${isIpReachable.value}" +
-                "\n\tCamera detected: ${isCameraDetected.value}"
-        Log.e("$TAG/runCall", "Can't make network call because `ipAddress` is null.")
+        if (isIpReachable.value == true) {
+            var stateString = "Connection State:" +
+                    "\n\tWifi: ${wifiState.value}" +
+                    "\n\tIP: ${ipAddress.value}" +
+                    "\n\tReachable: ${isIpReachable.value}" +
+                    "\n\tCamera detected: ${isCameraDetected.value}"
+            Log.d("$TAG/runCall", stateString)
+        }
     }
 
-    fun checkCameraDetected() {
+    fun resetIpAddress() {
+        ipAddress.value = null
+        isIpReachable.value = false
+        isCameraDetected.value = false
+        cameraModelName.value = null
+    }
+
+    private fun checkCameraDetected() {
+        Log.d("$TAG/checkCameraDetected", "IP: ${ipAddress.value}")
         runCall(apiService?.getCapability(),
-            success = {
+            success = { response ->
+                var rep = response as ApiResponseCapability
                 isCameraDetected.postValue(true)
+                cameraModelName.postValue(rep.info.modelName)
             },
             error = {
                 isCameraDetected.postValue(false)
             })
     }
 
-    fun checkIpReachable() {
+    private fun checkIpReachable() {
         ipAddress.value?.let {
-            val inetAddress = InetAddresses.parseNumericAddress(it)
-            isIpReachable.postValue(inetAddress.isReachable(IS_REACHABLE_TIMEOUT))
+            val inetAddress = java.net.InetAddress.getByName(it)
+            Timer().schedule(0) {
+                var isReachable = inetAddress.isReachable(IS_REACHABLE_TIMEOUT)
+                isIpReachable.postValue(isReachable)
+                if (isReachable) {
+                    checkCameraDetected()
+                }
+            }
         } ?: run {
-            isIpReachable.postValue(false)
+            isIpReachable.value = false
         }
     }
 
-    fun checkWifiState() {
+    private fun checkWifiState() {
         val wifiManager = application.getSystemService(Context.WIFI_SERVICE) as WifiManager?
         wifiManager?.let {
 
             if (wifiManager.isWifiEnabled) {
-                if (wifiManager.connectionInfo.bssid != null)
-                    wifiState.postValue(WifiState.Connected)
-                else
-                    wifiState.postValue(WifiState.EnabledNotConnected)
+                if (wifiManager.connectionInfo.bssid != null) {
+                    wifiState.value = WifiState.Connected
+                } else {
+                    wifiState.value = WifiState.EnabledNotConnected
+                }
             } else {
-                wifiState.postValue(WifiState.Disabled)
+                wifiState.value = WifiState.Disabled
             }
         }
     }

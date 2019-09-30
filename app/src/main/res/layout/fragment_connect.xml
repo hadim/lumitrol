@@ -242,12 +242,6 @@
 
                 </TableLayout>
 
-                <TextView
-                    android:id="@+id/log_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="#F44336" />
-
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
@@ -375,18 +369,34 @@
                     android:importantForAutofill="no" />
 
                 <TextView
-                    android:id="@+id/errorManualIPText"
+                    android:id="@+id/error_manual_ip_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAlignment="center"
                     android:textColor="@android:color/holo_red_dark" />
 
-                <Button
-                    android:id="@+id/manual_connect_button"
+                <LinearLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:text="@string/manual_connect_button" />
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/manual_connect_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="12dp"
+                        android:layout_weight="1"
+                        android:text="@string/manual_connect_button" />
+
+                    <Button
+                        android:id="@+id/reset_ip_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/reset_ip_button_text" />
+
+                </LinearLayout>
 
                 <View
                     android:layout_width="match_parent"

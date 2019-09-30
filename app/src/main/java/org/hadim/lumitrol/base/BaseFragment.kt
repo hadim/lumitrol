@@ -5,24 +5,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.LayoutRes
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import butterknife.ButterKnife
 import butterknife.Unbinder
 import com.google.android.material.snackbar.Snackbar
-import dagger.android.support.DaggerFragment
 import org.hadim.lumitrol.R
-import org.hadim.lumitrol.di.viewmodel.ViewModelFactory
-import javax.inject.Inject
 
 
-abstract class BaseFragment<T : BaseViewModel> : DaggerFragment() {
-
-    @Inject
-    lateinit var viewModelFactory: ViewModelFactory
+abstract class BaseFragment<T : BaseViewModel> : Fragment() {
 
     protected val viewModel: T by lazy(LazyThreadSafetyMode.NONE) {
-        ViewModelProvider(this, viewModelFactory).get(viewModelClass)
+        ViewModelProvider(this).get(viewModelClass)
     }
 
     protected abstract val viewModelClass: Class<T>
@@ -47,7 +42,7 @@ abstract class BaseFragment<T : BaseViewModel> : DaggerFragment() {
         // Bind views
         unbinder = ButterKnife.bind(this, root)
 
-        //installErrorObservers()
+        installErrorObservers()
 
         return root
     }

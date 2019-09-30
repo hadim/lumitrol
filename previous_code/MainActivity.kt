@@ -102,7 +102,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun checkWifi() {
-        // Check Wi-Fi is enabled.
         val wifi = applicationContext?.getSystemService(Context.WIFI_SERVICE) as WifiManager
         cameraStateModel.isWifiEnabled.value = wifi.isWifiEnabled
         enableNetworkOnWifi()

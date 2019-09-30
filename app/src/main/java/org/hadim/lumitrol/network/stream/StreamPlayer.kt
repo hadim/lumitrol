@@ -1,4 +1,4 @@
-package org.hadim.lumitrol.stream
+package org.hadim.lumitrol.network.stream
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -6,6 +6,7 @@ import android.util.Log
 import java.net.DatagramPacket
 import java.net.DatagramSocket
 import java.net.InetAddress
+import java.util.*
 import java.util.concurrent.Executors
 
 
@@ -28,8 +29,12 @@ class StreamPlayer(
     private var socket: DatagramSocket? = null
     private val address: InetAddress = InetAddress.getByName(ipAddress)
 
-    private val imageExecutor = Executors.newCachedThreadPool()
+    private val imageExecutor = Executors.newFixedThreadPool(10)
 
+    /*
+     * TODO: design a more efficient way using Stream maybe?
+     *  Current implementation has some lag.
+     */
     override fun run() {
 
         socket = null
@@ -58,6 +63,9 @@ class StreamPlayer(
             while (!Thread.interrupted()) {
                 try {
                     socket?.receive(receivedPacket)
+
+                    // TODO: some lag happen. Maybe because of getImage being run
+                    //  in the same thread as receive?
                     currentFrame = getImage(receivedPacket)
 
                     imageExecutor.submit {
@@ -65,6 +73,7 @@ class StreamPlayer(
                             onStreaming()
                             imageConsumer(currentFrame)
                         }
+
                     }
                 } catch (error: Exception) {
                     error.message?.let { Log.e("$TAG/run", it) }
@@ -81,17 +90,7 @@ class StreamPlayer(
 
         var currentFrame: Bitmap? = null
         try {
-            // https://gist.github.com/FWeinb/2d51fe63d0f9f5fc4d32d8a420b2c18d
-//            val additionalMetadata = bytesToInt(receivedPacket.data[47], receivedPacket.data[48])
-//            val metadata = receivedPacket.data.slice((48 + 16)..48 + additionalMetadata)
-
-            val imageOffset = 2 + 30 + receivedPacket.data[31].toUByte().toInt()
-            var imageData = receivedPacket.data.slice(imageOffset..receivedPacket.length - imageOffset).toByteArray()
-
-            // Only for debugging purpose.
-//            val decodedData = imageData.joinToString("") { b -> String.format("%02X", b) }
-//            Log.d("$TAG/getImage", decodedData)
-
+            var imageData = getImageData(receivedPacket)
             currentFrame = BitmapFactory.decodeByteArray(imageData, 0, imageData.size)
 
         } catch (error: Exception) {
@@ -100,6 +99,28 @@ class StreamPlayer(
         }
 
         return currentFrame
+    }
+
+    private fun getImageData(receivedPacket: DatagramPacket): ByteArray {
+        val udpData = receivedPacket.data
+        // The camera adds some kind of header to each packet, which we need to ignore
+        val videoDataStart = getImageDataStart(receivedPacket, udpData)
+        return Arrays.copyOfRange(udpData, videoDataStart, receivedPacket.length)
+    }
+
+    private fun getImageDataStart(receivedPacket: DatagramPacket, udpData: ByteArray): Int {
+        var videoDataStart = 130
+
+        // The image data starts somewhere after the first 130 bytes, but at last in 320 bytes
+        var k = 130
+        while (k < 320 && k < receivedPacket.length - 1) {
+            // The bytes FF and D8 signify the start of the jpeg data, see https://en.wikipedia.org/wiki/JPEG_File_Interchange_Format
+            if (udpData[k] == 0xFF.toByte() && udpData[k + 1] == 0xD8.toByte()) {
+                videoDataStart = k
+            }
+            k++
+        }
+        return videoDataStart
     }
 
 //    private fun bytesToInt(byte1: Byte, byte2: Byte) =

@@ -1,4 +1,4 @@
-package org.hadim.lumitrol.stream
+package org.hadim.lumitrol.network.stream
 
 import android.content.Context
 import android.graphics.Bitmap

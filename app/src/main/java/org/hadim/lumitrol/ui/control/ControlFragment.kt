@@ -13,8 +13,8 @@ import androidx.lifecycle.Observer
 import butterknife.BindView
 import butterknife.OnClick
 import org.hadim.lumitrol.base.BaseFragment
-import org.hadim.lumitrol.stream.StreamPlayer
-import org.hadim.lumitrol.stream.StreamViewer
+import org.hadim.lumitrol.network.stream.StreamPlayer
+import org.hadim.lumitrol.network.stream.StreamViewer
 import java.util.*
 
 
@@ -82,7 +82,7 @@ class ControlFragment : BaseFragment<ControlViewModel>() {
 
     private fun hideProgressBar() {
         if (::progressBarStream.isInitialized)
-            progressBarStream.visibility = View.GONE
+            progressBarStream.visibility = View.INVISIBLE
     }
 
     private fun installObservers() {
@@ -103,6 +103,7 @@ class ControlFragment : BaseFragment<ControlViewModel>() {
             } else {
                 disableFragment()
                 stopStream()
+                hideProgressBar()
             }
         })
     }

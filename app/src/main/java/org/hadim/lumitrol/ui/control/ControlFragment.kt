@@ -91,7 +91,7 @@ class ControlFragment : BaseFragment<ControlViewModel>() {
 
         if (::streamPlayer.isInitialized && streamPlayer.isPlaying) return
 
-        var localUdpPort = 41099
+        var localUdpPort = 28635
         var ipAddress = viewModel.repository.ipAddress.value
 
         viewModel.repository.startStream(localUdpPort)

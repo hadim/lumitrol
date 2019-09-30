@@ -72,7 +72,6 @@ class Repository(
                     networkError.postValue(null)
                     networkFailure.postValue(null)
                     success?.let {
-
                         apiResponse?.let { response ->
                             response.result?.let { result ->
                                 if (result == "ok") {

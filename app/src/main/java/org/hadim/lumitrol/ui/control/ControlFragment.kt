@@ -1,25 +1,23 @@
 package org.hadim.lumitrol.ui.control
 
-import android.graphics.Color
-import android.net.Uri
+import android.content.Context
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.ProgressBar
 import androidx.lifecycle.Observer
 import butterknife.BindView
 import butterknife.OnClick
-import com.google.android.exoplayer2.ExoPlayerFactory
-import com.google.android.exoplayer2.Player
-import com.google.android.exoplayer2.source.ProgressiveMediaSource
-import com.google.android.exoplayer2.ui.PlayerView
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
-import com.google.android.exoplayer2.util.Util
-import org.hadim.lumitrol.R
 import org.hadim.lumitrol.base.BaseFragment
+import org.hadim.lumitrol.stream.StreamPlayer
+import org.hadim.lumitrol.stream.StreamViewer
 import java.util.*
+
 
 class ControlFragment : BaseFragment<ControlViewModel>() {
 
@@ -28,16 +26,20 @@ class ControlFragment : BaseFragment<ControlViewModel>() {
     }
 
     override val viewModelClass: Class<ControlViewModel> = ControlViewModel::class.java
-    override val layoutId: Int = R.layout.fragment_control
+    override val layoutId: Int = org.hadim.lumitrol.R.layout.fragment_control
 
-    @BindView(R.id.control_record_button)
+    @BindView(org.hadim.lumitrol.R.id.control_record_button)
     lateinit var recordButton: ImageButton
 
-    @BindView(R.id.stream_view)
-    lateinit var streamView: PlayerView
+    @BindView(org.hadim.lumitrol.R.id.stream_view)
+    lateinit var streamViewer: StreamViewer
 
-    private lateinit var streamTimer: Timer
-    private lateinit var streamPlayer: Player
+    @BindView(org.hadim.lumitrol.R.id.progress_bar_stream)
+    lateinit var progressBarStream: ProgressBar
+
+    private var streamTimer: Timer? = null
+    private var streamPlayer: StreamPlayer? = null
+    private var streamPlayerThread: Thread? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -49,93 +51,129 @@ class ControlFragment : BaseFragment<ControlViewModel>() {
         Log.d("$TAG/onCreateView", "Init ControlFragment")
 
         installObservers()
-        viewModel.enableRecMode()
 
-        startStream()
+        if (viewModel.repository.isCameraDetected.value == true) {
+            viewModel.enableRecMode()
+            startStream()
+        }
 
         return view
     }
 
-    @OnClick(R.id.control_capture_button)
+    @OnClick(org.hadim.lumitrol.R.id.control_capture_button)
     fun captureButton() {
         Log.d("$TAG/captureButton", "clicked")
-        viewModel.capture()
+        viewModel.capture(onError = { error ->
+            showError("Capture Error: $error")
+        })
     }
 
-    @OnClick(R.id.control_record_button)
+    @OnClick(org.hadim.lumitrol.R.id.control_record_button)
     fun recordButton() {
         Log.d("$TAG/recordButton", "clicked")
-        viewModel.record()
+        viewModel.record(onError = { error ->
+            showError("Record Error: $error")
+        })
+    }
+
+    private fun showProgressBar() {
+        if (::progressBarStream.isInitialized)
+            progressBarStream.visibility = View.VISIBLE
+    }
+
+    private fun hideProgressBar() {
+        if (::progressBarStream.isInitialized)
+            progressBarStream.visibility = View.GONE
     }
 
     private fun installObservers() {
 
         viewModel.isRecording.observe(this, Observer { isRecording ->
             if (viewModel.isRecording.value == false) {
-                recordButton.setImageResource(R.drawable.ic_videocam_black_24dp)
+                recordButton.setImageResource(org.hadim.lumitrol.R.drawable.ic_videocam_black_24dp)
             } else {
-                recordButton.setImageResource(R.drawable.ic_stop_black_24dp)
+                recordButton.setImageResource(org.hadim.lumitrol.R.drawable.ic_stop_black_24dp)
             }
         })
 
         viewModel.repository.isCameraDetected.observe(this, Observer { isCameraDetected ->
             if (isCameraDetected == true) {
                 enableFragment()
+                startStream()
+                viewModel.enableRecMode()
             } else {
                 disableFragment()
+                stopStream()
             }
         })
     }
 
     private fun startStream() {
 
-        if (::streamPlayer.isInitialized && streamPlayer.isPlaying) return
+        if (streamPlayerThread != null) return
 
-        var localUdpPort = 28635
-        var ipAddress = viewModel.repository.ipAddress.value
+        Log.d("$TAG/startStream", "Start")
 
-        viewModel.repository.startStream(localUdpPort)
-        initializePlayer(ipAddress, localUdpPort)
-    }
+        showProgressBar()
 
-    private fun initializePlayer(ipAddress: String?, localUdpPort: Int) {
+        streamPlayerThread?.let { return }
 
+        val localUdpPort = 46995
+        val ipAddress = viewModel.repository.ipAddress.value as String
+
+        // Send startstream command every 5 seconds to maintain streaming.
+        streamTimer?.cancel()
         streamTimer = Timer()
-        streamTimer.schedule(object : TimerTask() {
+        streamTimer?.schedule(object : TimerTask() {
             override fun run() {
-                //cameraStateModel.cameraRequest.startStream(null, null, localUdpPort)
+                viewModel.repository.startStream(localUdpPort)
             }
         }, 0, 5000)
 
-        val streamPlayer = ExoPlayerFactory.newSimpleInstance(context?.applicationContext)
-
-        val mediaDataSourceFactory = DefaultDataSourceFactory(context, Util.getUserAgent(context, "Lumitrol"))
-
-        val streamURI = Uri.parse("udp://$ipAddress:$localUdpPort")
-        val mediaSource = ProgressiveMediaSource.Factory(mediaDataSourceFactory).createMediaSource(streamURI)
-
-        with(streamPlayer) {
-            prepare(mediaSource, false, false)
-            playWhenReady = true
+        // Initialize player
+        streamPlayer = StreamPlayer(
+            this.context as Context,
+            streamViewer::setCurrentImage,
+            {
+                Handler(Looper.getMainLooper()).post { stopStream() }
+            },
+            ipAddress, localUdpPort
+        )
+        streamPlayer?.let { streamPlayer ->
+            streamPlayerThread = Thread(streamPlayer)
+            streamPlayerThread?.start()
         }
-
-        streamView.setShutterBackgroundColor(Color.TRANSPARENT)
-        streamView.player = streamPlayer
-        streamView.requestFocus()
     }
 
     private fun stopStream() {
 
-        if (::streamPlayer.isInitialized && !streamPlayer.isPlaying) return
+        if (streamPlayerThread == null) return
 
+        Log.d("$TAG/stopStream", "Stop")
+
+        hideProgressBar()
         try {
             viewModel.repository.stopStream()
-            streamTimer.cancel()
-            if (::streamPlayer.isInitialized) streamPlayer.release()
-        } catch (e: InterruptedException) {
+            streamTimer?.cancel()
+            streamPlayerThread?.let { streamPlayerThread ->
+                if (streamPlayerThread.state != Thread.State.TERMINATED) {
+                    streamPlayerThread.interrupt()
+                    // streamPlayerThread.join()
+                }
+            }
+            streamPlayer = null
+            streamPlayerThread = null
+        } catch (error: Exception) {
             Log.e("ControlFragment/stopStream", "Error during stream interruption.")
-            Log.e("ControlFragment/stopStream", e.message)
+            error.message?.let { message ->
+                Log.e("ControlFragment/startStream", message)
+            }
+            throw error
         }
+    }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        stopStream()
     }
 }

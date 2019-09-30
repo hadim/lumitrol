@@ -70,7 +70,7 @@ class Repository(
         Log.d("$TAG/init", "Init Repository")
 
         checkAlive()
-        setupCheckAlive()
+        //setupCheckAlive()
     }
 
     fun buildApiService(force: Boolean? = false) {
@@ -169,8 +169,8 @@ class Repository(
     }
 
     private fun checkCameraDetected() {
-        Log.d("$TAG/checkCameraDetected", "IP: ${ipAddress.value}")
-        runCall(apiService?.getCapability(),
+        runCall(
+            apiService?.getCapability(),
             success = { response ->
                 var rep = response as ApiResponseCapability
                 putValue(isCameraDetected, true)
@@ -180,7 +180,8 @@ class Repository(
                 isCameraDetected.postValue(false)
                 putValue(isCameraDetected, false)
                 putValue(cameraModelName, null)
-            })
+            }
+        )
     }
 
     private fun checkIpReachable() {
@@ -231,25 +232,25 @@ class Repository(
         runCall(apiService?.playmode(), null, null)
     }
 
-    fun capture() {
+    fun capture(onError: (error: ApiResponse?) -> Unit) {
         Log.d("$TAG/capture", "")
         // TODO: handle error.
         recmode()
-        runCall(apiService?.capture(), null, null)
+        runCall(apiService?.capture(), null, { error, _ -> onError(error) })
     }
 
-    fun startRecord() {
+    fun startRecord(onError: (error: ApiResponse?) -> Unit) {
         Log.d("$TAG/capture", "")
         // TODO: handle error.
         recmode()
-        runCall(apiService?.startRecord(), null, null)
+        runCall(apiService?.startRecord(), null, { error, _ -> onError(error) })
     }
 
-    fun stopRecord() {
+    fun stopRecord(onError: (error: ApiResponse?) -> Unit) {
         Log.d("$TAG/capture", "")
         // TODO: handle error.
         recmode()
-        runCall(apiService?.stopRecord(), null, null)
+        runCall(apiService?.stopRecord(), null, { error, _ -> onError(error) })
     }
 
     fun startStream(port: Int) {

@@ -28,4 +28,5 @@
     <string name="dismiss">Dismiss</string>
     <string name="noIpAddressText">None</string>
     <string name="reset_ip_button_text">Reset</string>
+    <string name="no_error_message">No error message.</string>
 </resources>

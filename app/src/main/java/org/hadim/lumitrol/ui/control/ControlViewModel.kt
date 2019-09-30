@@ -22,20 +22,20 @@ class ControlViewModel(
         Log.d("$TAG/init", "Init ControlViewModel")
     }
 
-    fun enableRecMode(){
+    fun enableRecMode() {
         repository.recmode()
     }
 
-    fun capture() {
-        repository.capture()
+    fun capture(onError: (error: Any?) -> Unit) {
+        repository.capture(onError)
     }
 
-    fun record() {
+    fun record(onError: (error: Any?) -> Unit) {
         if (isRecording.value == false) {
-            repository.startRecord()
+            repository.startRecord(onError)
             isRecording.value = true
         } else {
-            repository.stopRecord()
+            repository.stopRecord(onError)
             isRecording.value = false
         }
     }

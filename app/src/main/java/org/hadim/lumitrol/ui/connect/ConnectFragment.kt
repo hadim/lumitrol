@@ -55,9 +55,6 @@ class ConnectFragment : BaseFragment<ConnectViewModel>() {
     @BindView(R.id.ip_address_field)
     lateinit var ipAddressField: EditText
 
-    @BindView(R.id.error_manual_ip_text)
-    lateinit var errorManualIPTextView: TextView
-
     @BindView(R.id.manual_connect_button)
     lateinit var manuaConnectButton: Button
 
@@ -85,14 +82,10 @@ class ConnectFragment : BaseFragment<ConnectViewModel>() {
         try {
             ipAddressString = java.net.InetAddress.getByName(ipAddressField.text.toString()).hostAddress
             ipAddressField.setTextColor(defaultIPAddressTextColor)
-            errorManualIPTextView.text = ""
-            errorManualIPTextView.visibility = View.GONE
             manuaConnectButton.isEnabled = true
 
         } catch (e: Exception) {
             ipAddressField.setTextColor(Color.RED)
-            errorManualIPTextView.text = e.message
-            errorManualIPTextView.visibility = View.VISIBLE
             manuaConnectButton.isEnabled = false
         }
 

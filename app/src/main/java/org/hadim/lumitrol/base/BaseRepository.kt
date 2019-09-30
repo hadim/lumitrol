@@ -25,9 +25,9 @@ abstract class BaseRepository {
 
         override fun onResponse(call: Call<T>, response: Response<T>) {
             if (response.isSuccessful) {
-                Log.d("$TAG/makeCall", "Request success.")
-                Log.d("$TAG/makeCall", "Request: $response")
-                Log.d("$TAG/makeCall", "Message: ${response.message()}")
+//                Log.d("$TAG/makeCall", "Request success.")
+//                Log.d("$TAG/makeCall", "Request: $response")
+//                Log.d("$TAG/makeCall", "Message: ${response.message()}")
                 onSuccess?.invoke(response.body(), call)
             } else {
                 Log.d("$TAG/makeCall", "Request error.")

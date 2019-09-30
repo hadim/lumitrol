@@ -11,8 +11,9 @@ import androidx.lifecycle.ViewModelProvider
 import butterknife.ButterKnife
 import butterknife.Unbinder
 import com.google.android.material.snackbar.Snackbar
-import org.hadim.lumitrol.R
 import org.hadim.lumitrol.utils.forEachChildView
+
+
 
 
 abstract class BaseFragment<T : BaseViewModel> : Fragment() {
@@ -58,7 +59,7 @@ abstract class BaseFragment<T : BaseViewModel> : Fragment() {
         errorSnackBar?.dismiss()
         errorSnackBar = Snackbar.make(root, errorMessage, Snackbar.LENGTH_INDEFINITE)
             .apply {
-                setAction(getString(R.string.dismiss)) {
+                setAction(getString(org.hadim.lumitrol.R.string.dismiss)) {
                     dismiss()
                 }
                 show()

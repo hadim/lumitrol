@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
-import android.graphics.Rect
 import android.util.AttributeSet
 import android.view.SurfaceView
 
@@ -15,45 +14,42 @@ import android.view.SurfaceView
 class StreamViewer(context: Context?, st: AttributeSet) : SurfaceView(context, st) {
 
     private var currentImage: Bitmap? = null
-    private var boxes: Array<Rect> = arrayOf()
 
-    private var viewFinderWidth = 100
-    private var viewFinderHeight = 0
+    private var viewWidth = 100
+    private var viewHeight = 0
 
     init {
         setWillNotDraw(false)
         addOnLayoutChangeListener { _, left, _, right, _, _, _, _, _ ->
-            viewFinderWidth = right - left
+            viewWidth = right - left
+            resize()
         }
+        resize()
     }
 
     fun setCurrentImage(bitmap: Bitmap?) {
-        if (bitmap == null)
-            return
-        currentImage = bitmap
-        // compute the height of the view once we know the bitmap's width and height
-        if (viewFinderHeight == 0) {
-            val factor = viewFinderWidth.toFloat() / bitmap.width.toFloat()
-            viewFinderHeight = (currentImage!!.height * factor).toInt()
+        bitmap?.let { bitmap ->
+            // Compute the height of the view once we know the bitmap's width and height
+            if (viewHeight == 0) {
+                val factor = viewWidth.toFloat() / bitmap.width.toFloat()
+                viewHeight = (bitmap.height * factor).toInt()
+                resize()
+            }
+            currentImage = Bitmap.createScaledBitmap(bitmap, viewWidth, viewHeight, true)
+            invalidate()
         }
-        currentImage = Bitmap.createScaledBitmap(currentImage!!, viewFinderWidth, viewFinderHeight, false)
-        invalidate()
     }
 
     override fun draw(canvas: Canvas) {
         super.draw(canvas)
-        if (currentImage != null) {
-            canvas.drawBitmap(currentImage!!, 0f, 0f, Paint())
-        }
-        val paint = Paint(Paint.ANTI_ALIAS_FLAG)
 
-        paint.strokeWidth = 2f
-        paint.color = android.graphics.Color.YELLOW
-        paint.style = Paint.Style.STROKE
-        paint.isAntiAlias = true
-        for (box in boxes) {
-            canvas.drawRect(box, paint)
+        currentImage?.let { currentImage ->
+            canvas.drawBitmap(currentImage, 0f, 0f, Paint())
         }
+    }
+
+    private fun resize() {
+        this.layoutParams = android.widget.FrameLayout.LayoutParams(viewWidth, viewHeight)
     }
 
 

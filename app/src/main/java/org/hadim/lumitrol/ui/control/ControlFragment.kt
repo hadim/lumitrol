@@ -1,6 +1,5 @@
 package org.hadim.lumitrol.ui.control
 
-import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -132,12 +131,12 @@ class ControlFragment : BaseFragment<ControlViewModel>() {
 
         // Initialize player
         streamPlayer = StreamPlayer(
-            this.context as Context,
-            streamViewer::setCurrentImage,
-            {
-                Handler(Looper.getMainLooper()).post { stopStream() }
-            },
-            ipAddress, localUdpPort
+            imageConsumer = streamViewer::setCurrentImage,
+            onStreaming = { Handler(Looper.getMainLooper()).post { hideProgressBar() } },
+            onLoading = { Handler(Looper.getMainLooper()).post { showProgressBar() } },
+            onFailure = { Handler(Looper.getMainLooper()).post { stopStream() } },
+            ipAddress = ipAddress,
+            udpPort = localUdpPort
         )
         streamPlayer?.let { streamPlayer ->
             streamPlayerThread = Thread(streamPlayer)

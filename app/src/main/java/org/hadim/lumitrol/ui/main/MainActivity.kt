@@ -10,6 +10,7 @@ import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.os.Bundle
 import android.util.Log
+import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.Navigation.findNavController
@@ -70,11 +71,15 @@ class MainActivity : BaseActivity<MainActivityViewModel>() {
             setupActionBarWithNavController(navController, appBarConfiguration)
             navView.setupWithNavController(navController)
 
-            Log.d("$TAG/onCreate", "Init MainActivity")
+            val headerView = navView.getHeaderView(0)
+            val versionTextView = headerView.findViewById(R.id.version_text) as TextView
+            versionTextView.text = getVersionName()
         }
 
         enableNetworkOnWifi()
         registerWifiChangeCallback()
+
+        Log.d("$TAG/onCreate", "Init MainActivity")
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -112,5 +117,11 @@ class MainActivity : BaseActivity<MainActivityViewModel>() {
 
             }
         })
+    }
+
+    private fun getVersionName(): String? {
+        val manager = packageManager
+        val info = manager.getPackageInfo(packageName, 0)
+        return info?.versionName
     }
 }

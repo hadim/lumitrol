@@ -18,14 +18,14 @@ class ApiResponseSimple : ApiResponseBase()
 
 class ApiResponseCapability : ApiResponseBase() {
 
-    @field:Element(required = true, name = "comm_proto_ver")
+    @field:Element(required = false, name = "comm_proto_ver")
     var version: String? = null
 
-    @field:Element(required = true, name = "productinfo")
+    @field:Element(required = false, name = "productinfo")
     lateinit var info: ProductInfo
 
     class ProductInfo {
-        @field:Element(required = true, name = "modelname")
+        @field:Element(required = false, name = "modelname")
         lateinit var modelName: String
     }
 }

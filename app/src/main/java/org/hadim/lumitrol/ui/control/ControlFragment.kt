@@ -158,7 +158,7 @@ class ControlFragment : BaseFragment<ControlViewModel>() {
             streamPlayerThread?.let { streamPlayerThread ->
                 if (streamPlayerThread.state != Thread.State.TERMINATED) {
                     streamPlayerThread.interrupt()
-                    // streamPlayerThread.join()
+                    streamPlayerThread.join()
                 }
             }
             streamPlayer = null

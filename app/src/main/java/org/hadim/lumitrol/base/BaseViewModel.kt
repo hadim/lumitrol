@@ -1,6 +1,7 @@
 package org.hadim.lumitrol.base
 
 import android.app.Application
+import android.content.Context
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
 import org.hadim.lumitrol.model.Repository
@@ -11,4 +12,9 @@ abstract class BaseViewModel(
 ) : AndroidViewModel(application) {
 
     var repository: Repository = Repository.getRepository(application)
+    var context: Context
+
+    init {
+        this.context = application.applicationContext
+    }
 }

@@ -10,7 +10,7 @@
 
     <string name="connect_button">Automatic Connection</string>
     <string name="connection_welcome">Enable the Wifi on your camera. Then, connect your device to the camera.</string>
-    <string name="home_welcome_text">Discover your camera IP address automatically (this feature does not work yet).</string>
+    <string name="home_welcome_text">Discover your camera IP address automatically.</string>
     <string name="home_ip_text">Alternatively, you can enter the IP address of your camera below.</string>
     <string name="manual_connect_button">Manual Connection</string>
 

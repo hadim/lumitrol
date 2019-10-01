@@ -63,8 +63,11 @@ dependencies {
     // OkHttp: HTTP client
     implementation("com.squareup.okhttp3:okhttp:4.2.0")
 
-    // Exoplayer: video player for streaming
-    implementation 'com.google.android.exoplayer:exoplayer:2.10.5'
+    // onvif: uPnP library
+    implementation('com.github.lamba92:ONVIF-Java:1.1.1') {
+        // Exclude instead of this.
+        transitive = false
+    }
 
     // Butterknife (@BindView)
     implementation 'com.jakewharton:butterknife:10.2.0'
@@ -75,3 +78,4 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 }
+

@@ -1,7 +1,6 @@
 package org.hadim.lumitrol.ui.connect
 
 import android.app.Application
-import android.content.Context
 import android.os.Handler
 import android.util.Log
 import androidx.lifecycle.SavedStateHandle
@@ -24,7 +23,6 @@ class ConnectViewModel(
 
     init {
         Log.d("$TAG/init", "Init ConnectViewModel")
-        automaticConnection()
     }
 
     fun manualConnection(ipAddress: String) {
@@ -39,6 +37,7 @@ class ConnectViewModel(
 
     fun automaticConnection() {
         Log.d("$TAG/automaticConnection", "clicked")
+
         repository.resetIpAddress()
         stopAutomaticConnection()
 

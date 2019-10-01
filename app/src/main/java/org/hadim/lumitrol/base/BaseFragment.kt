@@ -14,8 +14,6 @@ import com.google.android.material.snackbar.Snackbar
 import org.hadim.lumitrol.utils.forEachChildView
 
 
-
-
 abstract class BaseFragment<T : BaseViewModel> : Fragment() {
 
     protected val viewModel: T by lazy(LazyThreadSafetyMode.NONE) {
@@ -71,7 +69,8 @@ abstract class BaseFragment<T : BaseViewModel> : Fragment() {
     }
 
     protected fun disableFragment() {
-        root.forEachChildView { it.isEnabled = false }
+        // TODO: gray out the whole fragment.
+        root.forEachChildView { view -> view.isEnabled = false }
     }
 
     protected fun enableFragment() {

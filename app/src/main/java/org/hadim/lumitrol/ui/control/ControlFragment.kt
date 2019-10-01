@@ -1,8 +1,6 @@
 package org.hadim.lumitrol.ui.control
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -133,9 +131,9 @@ class ControlFragment : BaseFragment<ControlViewModel>() {
         // Initialize player
         streamPlayer = StreamPlayer(
             imageConsumer = streamViewer::setCurrentImage,
-            onStreaming = { Handler(Looper.getMainLooper()).post { hideProgressBar() } },
-            onLoading = { Handler(Looper.getMainLooper()).post { showProgressBar() } },
-            onFailure = { Handler(Looper.getMainLooper()).post { stopStream() } },
+            onStreaming = { activity?.runOnUiThread { hideProgressBar() } },
+            onLoading = { activity?.runOnUiThread { showProgressBar() } },
+            onFailure = { activity?.runOnUiThread { stopStream() } },
             ipAddress = ipAddress,
             udpPort = localUdpPort
         )
@@ -173,7 +171,8 @@ class ControlFragment : BaseFragment<ControlViewModel>() {
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
         stopStream()
+        super.onDestroyView()
+
     }
 }

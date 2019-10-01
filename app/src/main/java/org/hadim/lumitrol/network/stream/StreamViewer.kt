@@ -29,20 +29,21 @@ class StreamViewer(context: Context?, st: AttributeSet) : SurfaceView(context, s
 
     fun setCurrentImage(bitmap: Bitmap?) {
         bitmap?.let { bitmap ->
-            // Compute the height of the view once we know the bitmap's width and height
-            if (viewHeight == 0) {
-                val factor = viewWidth.toFloat() / bitmap.width.toFloat()
-                viewHeight = (bitmap.height * factor).toInt()
-                resize()
+            this.post {
+                // Compute the height of the view once we know the bitmap's width and height
+                if (viewHeight == 0) {
+                    val factor = viewWidth.toFloat() / bitmap.width.toFloat()
+                    viewHeight = (bitmap.height * factor).toInt()
+                    resize()
+                }
+                currentImage = Bitmap.createScaledBitmap(bitmap, viewWidth, viewHeight, true)
+                invalidate()
             }
-            currentImage = Bitmap.createScaledBitmap(bitmap, viewWidth, viewHeight, true)
-            invalidate()
         }
     }
 
     override fun draw(canvas: Canvas) {
         super.draw(canvas)
-
         currentImage?.let { currentImage ->
             canvas.drawBitmap(currentImage, 0f, 0f, Paint())
         }

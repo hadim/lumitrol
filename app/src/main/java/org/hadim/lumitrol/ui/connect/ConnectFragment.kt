@@ -12,6 +12,7 @@ import android.widget.*
 import androidx.lifecycle.Observer
 import butterknife.BindView
 import butterknife.OnClick
+import org.hadim.lumitrol.R
 import org.hadim.lumitrol.base.BaseFragment
 import org.hadim.lumitrol.model.WifiState
 
@@ -23,40 +24,49 @@ class ConnectFragment : BaseFragment<ConnectViewModel>() {
     }
 
     override val viewModelClass: Class<ConnectViewModel> = ConnectViewModel::class.java
-    override val layoutId: Int = org.hadim.lumitrol.R.layout.fragment_connect
+    override val layoutId: Int = R.layout.fragment_connect
 
-    @BindView(org.hadim.lumitrol.R.id.connection_status_wifi_text)
+    @BindView(R.id.connection_status_wifi_text)
     lateinit var connectionStatusWIFITextView: TextView
 
-    @BindView(org.hadim.lumitrol.R.id.connection_status_wifi_icon)
+    @BindView(R.id.connection_status_wifi_icon)
     lateinit var connectionStatusWIFIIcon: ImageView
 
-    @BindView(org.hadim.lumitrol.R.id.connection_status_ip_text)
+    @BindView(R.id.connection_status_ip_text)
     lateinit var connectionStatusIPTextView: TextView
 
-    @BindView(org.hadim.lumitrol.R.id.connection_status_ip_icon)
+    @BindView(R.id.connection_status_ip_icon)
     lateinit var connectionStatusIPIcon: ImageView
 
-    @BindView(org.hadim.lumitrol.R.id.connection_status_ip_progress_bar)
+    @BindView(R.id.connection_status_ip_progress_bar)
     lateinit var connectionStatusIPProgressBar: ProgressBar
 
-    @BindView(org.hadim.lumitrol.R.id.connection_status_camera_text)
+    @BindView(R.id.connection_status_camera_text)
     lateinit var connectionStatusCameraTextView: TextView
 
-    @BindView(org.hadim.lumitrol.R.id.connection_status_camera_icon)
+    @BindView(R.id.connection_status_camera_icon)
     lateinit var connectionStatusCameraIcon: ImageView
 
-    @BindView(org.hadim.lumitrol.R.id.connection_status_camera_progress_bar)
+    @BindView(R.id.connection_status_camera_progress_bar)
     lateinit var connectionStatusCameraProgressBar: ProgressBar
 
-    @BindView(org.hadim.lumitrol.R.id.connection_status_model_name_text)
+    @BindView(R.id.connection_status_model_name_text)
     lateinit var connectionStatusModelNameTextView: TextView
 
-    @BindView(org.hadim.lumitrol.R.id.ip_address_field)
+    @BindView(R.id.ip_address_field)
     lateinit var ipAddressField: EditText
 
-    @BindView(org.hadim.lumitrol.R.id.manual_connect_button)
-    lateinit var manuaConnectButton: Button
+    @BindView(R.id.manual_connect_button)
+    lateinit var manualConnectButton: Button
+
+    @BindView(R.id.automatic_connect_button)
+    lateinit var autoConnectButton: Button
+
+    @BindView(R.id.manual_connection_progressbar)
+    lateinit var manualProgressBar: ProgressBar
+
+    @BindView(R.id.automatic_connection_progressbar)
+    lateinit var autoProgressBar: ProgressBar
 
     private var defaultIPAddressTextColor: Int = -1
 
@@ -72,33 +82,54 @@ class ConnectFragment : BaseFragment<ConnectViewModel>() {
         defaultIPAddressTextColor = ipAddressField.textColors.defaultColor
 
         installObservers()
+
+        if (viewModel.repository.isCameraDetected.value == false) {
+            automaticConnection()
+        }
+
         return view
     }
 
-    @OnClick(org.hadim.lumitrol.R.id.manual_connect_button)
+    @OnClick(R.id.manual_connect_button)
     fun manualConnection() {
+
+        if (viewModel.repository.wifiState.value != WifiState.Connected) {
+            Log.i("$TAG/manualConnection", getString(R.string.wifi_needs_connected))
+            return
+        }
+
         var ipAddressString: String? = null
         try {
             ipAddressString = java.net.InetAddress.getByName(ipAddressField.text.toString()).hostAddress
             ipAddressField.setTextColor(defaultIPAddressTextColor)
-            manuaConnectButton.isEnabled = true
+            manualConnectButton.isEnabled = true
             viewModel.manualConnection(ipAddressString)
+            autoProgressBar.visibility = View.INVISIBLE
+            manualProgressBar.visibility = View.VISIBLE
 
         } catch (e: Exception) {
             ipAddressField.setTextColor(Color.RED)
-            manuaConnectButton.isEnabled = false
+            manualConnectButton.isEnabled = false
         }
     }
 
-    @OnClick(org.hadim.lumitrol.R.id.connect_button)
+    @OnClick(R.id.automatic_connect_button)
     fun automaticConnection() {
+
+        if (viewModel.repository.wifiState.value != WifiState.Connected) {
+            Log.i("$TAG/automaticConnection", getString(R.string.wifi_needs_connected))
+            return
+        }
+
         viewModel.automaticConnection()
+        autoProgressBar.visibility = View.VISIBLE
+        manualProgressBar.visibility = View.INVISIBLE
     }
 
-    @OnClick(org.hadim.lumitrol.R.id.reset_ip_button)
+    @OnClick(R.id.reset_ip_button)
     fun resetIpAddress() {
         viewModel.repository.resetIpAddress()
-        ipAddressField.setText(getString(org.hadim.lumitrol.R.string.default_ip))
+        ipAddressField.setText(getString(R.string.default_ip))
     }
 
     private fun installObservers() {
@@ -108,11 +139,11 @@ class ConnectFragment : BaseFragment<ConnectViewModel>() {
                 try {
                     var address = java.net.InetAddress.getByName(ipAddressField.text.toString()).hostAddress
                     ipAddressField.setTextColor(defaultIPAddressTextColor)
-                    manuaConnectButton.isEnabled = true
+                    manualConnectButton.isEnabled = true
                     viewModel.manualConnection(address)
                 } catch (e: Exception) {
                     ipAddressField.setTextColor(Color.RED)
-                    manuaConnectButton.isEnabled = false
+                    manualConnectButton.isEnabled = false
                 }
             }
 
@@ -123,10 +154,10 @@ class ConnectFragment : BaseFragment<ConnectViewModel>() {
         viewModel.repository.wifiState.observe(this, Observer { wifiState ->
             if (wifiState == WifiState.Connected) {
                 connectionStatusWIFIIcon.setImageResource(android.R.drawable.presence_online)
-                connectionStatusWIFITextView.text = "ON"
+                connectionStatusWIFITextView.text = getString(R.string.on)
             } else {
                 connectionStatusWIFIIcon.setImageResource(android.R.drawable.presence_busy)
-                connectionStatusWIFITextView.text = "OFF"
+                connectionStatusWIFITextView.text = getString(R.string.off)
             }
         })
 
@@ -134,7 +165,7 @@ class ConnectFragment : BaseFragment<ConnectViewModel>() {
             ipAddress?.let {
                 connectionStatusIPTextView.text = ipAddress
             } ?: run {
-                connectionStatusIPTextView.text = getString(org.hadim.lumitrol.R.string.noIpAddressText)
+                connectionStatusIPTextView.text = getString(R.string.noIpAddressText)
             }
         })
 
@@ -149,10 +180,12 @@ class ConnectFragment : BaseFragment<ConnectViewModel>() {
         viewModel.repository.isCameraDetected.observe(this, Observer { isCameraDetected ->
             if (isCameraDetected == true) {
                 connectionStatusCameraIcon.setImageResource(android.R.drawable.presence_online)
-                connectionStatusCameraTextView.text = "OK"
+                connectionStatusCameraTextView.text = getString(R.string.ok)
+                autoProgressBar.visibility = View.INVISIBLE
+                manualProgressBar.visibility = View.INVISIBLE
             } else {
                 connectionStatusCameraIcon.setImageResource(android.R.drawable.presence_busy)
-                connectionStatusCameraTextView.text = getString(org.hadim.lumitrol.R.string.noIpAddressText)
+                connectionStatusCameraTextView.text = getString(R.string.noIpAddressText)
             }
         })
 
@@ -160,7 +193,7 @@ class ConnectFragment : BaseFragment<ConnectViewModel>() {
             cameraModelName?.let {
                 connectionStatusModelNameTextView.text = cameraModelName
             } ?: run {
-                connectionStatusModelNameTextView.text = getString(org.hadim.lumitrol.R.string.noIpAddressText)
+                connectionStatusModelNameTextView.text = getString(R.string.noIpAddressText)
             }
         })
     }

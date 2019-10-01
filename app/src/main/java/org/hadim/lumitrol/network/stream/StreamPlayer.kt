@@ -15,9 +15,9 @@ import java.util.concurrent.Executors
  */
 class StreamPlayer(
     private val imageConsumer: ((Bitmap) -> Unit),
-    private val onStreaming: (() -> Unit),
-    private val onLoading: (() -> Unit),
-    private val onFailure: ((Exception) -> Unit),
+    private val onStreaming: (() -> Unit)?,
+    private val onLoading: (() -> Unit)?,
+    private val onFailure: ((Exception) -> Unit)?,
     ipAddress: String,
     private val udpPort: Int
 ) : Runnable {
@@ -37,6 +37,8 @@ class StreamPlayer(
      */
     override fun run() {
 
+        android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND)
+
         socket = null
         try {
             socket = DatagramSocket(udpPort)
@@ -45,10 +47,10 @@ class StreamPlayer(
             error.message?.let {
                 Log.e("$TAG/run", "Can't create the socket for streaming: ${error.message}")
             }
-            onFailure(error)
+            onFailure?.let { it(error) }
         }
 
-        onLoading()
+        onLoading?.let { it() }
 
         socket?.let {
             // The camera sends each image in one UDP packet, normally between 25000 and 30000 bytes. We set 35000 here to be safe.
@@ -70,20 +72,21 @@ class StreamPlayer(
 
                     imageExecutor.submit {
                         currentFrame?.let { currentFrame ->
-                            onStreaming()
+                            onStreaming?.let { it() }
                             imageConsumer(currentFrame)
                         }
 
                     }
                 } catch (error: Exception) {
                     error.message?.let { Log.e("$TAG/run", it) }
-                    onLoading()
+                    onLoading?.let { it() }
                 }
             }
         }
 
         imageExecutor.shutdown()
         socket?.close()
+        Thread.interrupted()
     }
 
     private fun getImage(receivedPacket: DatagramPacket): Bitmap? {
@@ -95,7 +98,7 @@ class StreamPlayer(
 
         } catch (error: Exception) {
             error.message?.let { Log.e("$TAG/getImage", it) }
-            onLoading()
+            onLoading?.let { it() }
         }
 
         return currentFrame

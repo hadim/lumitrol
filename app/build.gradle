@@ -10,8 +10,8 @@ android {
         applicationId "org.hadim.lumitrol"
         minSdkVersion 27
         targetSdkVersion 28
-        versionCode 3
-        versionName "0.2.2"
+        versionCode 4
+        versionName "0.2.3-dev"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

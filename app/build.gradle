@@ -4,12 +4,12 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
     buildToolsVersion "29.0.2"
     defaultConfig {
         applicationId "org.hadim.lumitrol"
         minSdkVersion 27
-        targetSdkVersion 28
+        targetSdkVersion 29
         versionCode 4
         versionName "0.2.3-dev"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -61,7 +61,7 @@ dependencies {
     implementation "com.squareup.retrofit2:adapter-rxjava:2.6.2"
 
     // OkHttp: HTTP client
-    implementation("com.squareup.okhttp3:okhttp:4.2.0")
+    implementation('com.squareup.okhttp3:okhttp:4.2.1')
 
     // onvif: uPnP library
     implementation('com.github.lamba92:ONVIF-Java:1.1.1') {

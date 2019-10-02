@@ -56,10 +56,10 @@ class StreamPlayer(
 
             // The camera sends each image in one UDP packet, normally between 25000 and 30000 bytes.
             // We set 35000 here to be safe.
-            var udpPacketBuffer: ByteArray = ByteArray(35000)
+            val udpPacketBuffer: ByteArray = ByteArray(35000)
             var currentFrame: Bitmap?
 
-            var receivedPacket: DatagramPacket? = null
+            var receivedPacket: DatagramPacket
 
             currentFrame = null
             while (!Thread.interrupted()) {
@@ -70,7 +70,7 @@ class StreamPlayer(
                         address, udpPort
                     )
 
-                    socket?.receive(receivedPacket)
+                    socket.receive(receivedPacket)
 
                     // TODO: some lag happen. Maybe because of getImage being run
                     //  in the same thread as receive?
@@ -99,7 +99,7 @@ class StreamPlayer(
 
         var currentFrame: Bitmap? = null
         try {
-            var imageData = getImageData(receivedPacket)
+            val imageData = getImageData(receivedPacket)
             currentFrame = BitmapFactory.decodeByteArray(imageData, 0, imageData.size)
 
         } catch (error: Exception) {

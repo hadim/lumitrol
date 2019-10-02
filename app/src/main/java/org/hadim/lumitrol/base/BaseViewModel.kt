@@ -12,9 +12,6 @@ abstract class BaseViewModel(
 ) : AndroidViewModel(application) {
 
     var repository: Repository = Repository.getRepository(application)
-    var context: Context
+    var context: Context = application.applicationContext
 
-    init {
-        this.context = application.applicationContext
-    }
 }

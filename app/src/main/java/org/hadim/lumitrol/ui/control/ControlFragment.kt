@@ -87,7 +87,7 @@ class ControlFragment : BaseFragment<ControlViewModel>() {
     private fun installObservers() {
 
         viewModel.isRecording.observe(this, Observer { isRecording ->
-            if (viewModel.isRecording.value == false) {
+            if (isRecording == false) {
                 recordButton.setImageResource(R.drawable.ic_videocam_black_24dp)
             } else {
                 recordButton.setImageResource(R.drawable.ic_stop_black_24dp)

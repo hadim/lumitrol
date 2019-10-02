@@ -86,7 +86,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="8dp"
                         android:layout_weight="1"
-                        android:text="Wi-Fi :"
+                        android:text="@string/wi_fi"
                         android:textStyle="bold" />
 
                     <TextView
@@ -123,7 +123,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="8dp"
                         android:layout_weight="1"
-                        android:text="IP Address :"
+                        android:text="@string/ip_address"
                         android:textStyle="bold" />
 
                     <TextView
@@ -215,7 +215,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="8dp"
                         android:layout_weight="1"
-                        android:text="Camera Model :"
+                        android:text="@string/camera_model"
                         android:textStyle="bold" />
 
                     <TextView

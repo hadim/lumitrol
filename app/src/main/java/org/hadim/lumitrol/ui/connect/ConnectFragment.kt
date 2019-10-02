@@ -98,7 +98,7 @@ class ConnectFragment : BaseFragment<ConnectViewModel>() {
             return
         }
 
-        var ipAddressString: String? = null
+        val ipAddressString: String
         try {
             ipAddressString = java.net.InetAddress.getByName(ipAddressField.text.toString()).hostAddress
             ipAddressField.setTextColor(defaultIPAddressTextColor)
@@ -137,7 +137,7 @@ class ConnectFragment : BaseFragment<ConnectViewModel>() {
         ipAddressField.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 try {
-                    var address = java.net.InetAddress.getByName(ipAddressField.text.toString()).hostAddress
+                    val address = java.net.InetAddress.getByName(ipAddressField.text.toString()).hostAddress
                     ipAddressField.setTextColor(defaultIPAddressTextColor)
                     manualConnectButton.isEnabled = true
                     viewModel.manualConnection(address)

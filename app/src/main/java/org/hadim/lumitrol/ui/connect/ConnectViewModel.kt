@@ -19,7 +19,7 @@ class ConnectViewModel(
         const val TAG: String = "ConnectViewModel"
     }
 
-    var discovery: UPnPDiscovery? = null
+    private var discovery: UPnPDiscovery? = null
 
     init {
         Log.d("$TAG/init", "Init ConnectViewModel")

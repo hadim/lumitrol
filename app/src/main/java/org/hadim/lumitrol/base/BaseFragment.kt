@@ -27,7 +27,7 @@ abstract class BaseFragment<T : BaseViewModel> : Fragment() {
 
     private var unbinder: Unbinder? = null
 
-    protected lateinit var root: View
+    private lateinit var root: View
 
     private var errorSnackBar: Snackbar? = null
 
@@ -64,7 +64,7 @@ abstract class BaseFragment<T : BaseViewModel> : Fragment() {
             }
     }
 
-    protected fun hideError() {
+    private fun hideError() {
         errorSnackBar?.dismiss()
     }
 

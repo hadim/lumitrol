@@ -24,7 +24,7 @@ enum class WifiState {
 
 class Repository(
     var application: Application,
-    var apiServiceFactory: ApiServiceFactory
+    private var apiServiceFactory: ApiServiceFactory
 ) : BaseRepository() {
 
     companion object {
@@ -172,7 +172,7 @@ class Repository(
         runCall(
             apiService?.getCapability(),
             success = { response ->
-                var rep = response as ApiResponseCapability
+                val rep = response as ApiResponseCapability
                 putValue(isCameraDetected, true)
                 putValue(cameraModelName, rep.info.modelName)
             },
@@ -189,7 +189,7 @@ class Repository(
             val inetAddress = java.net.InetAddress.getByName(it)
 
             Timer().schedule(0) {
-                var isReachable = inetAddress.isReachable(IS_REACHABLE_TIMEOUT)
+                val isReachable = inetAddress.isReachable(IS_REACHABLE_TIMEOUT)
                 putValue(isIpReachable, isReachable)
 
                 if (isReachable) {

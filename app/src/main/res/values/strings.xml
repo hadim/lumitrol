@@ -28,10 +28,12 @@
     <string name="dismiss">Dismiss</string>
     <string name="noIpAddressText">None</string>
     <string name="reset_ip_button_text">Reset</string>
-    <string name="no_error_message">No error message.</string>
     <string name="camera_detected">Camera Detected :</string>
     <string name="wifi_needs_connected">Wifi needs to be connected.</string>
     <string name="on">ON</string>
     <string name="off">OFF</string>
     <string name="ok">OK</string>
+    <string name="wi_fi">Wi-Fi :</string>
+    <string name="ip_address">IP Address :</string>
+    <string name="camera_model">Camera Model :</string>
 </resources>

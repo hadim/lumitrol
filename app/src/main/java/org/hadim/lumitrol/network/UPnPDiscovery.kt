@@ -42,9 +42,7 @@ class UPnPDiscovery(private val context: Context) {
     fun unlockMulticast() {
         val wifiManager = context.getSystemService(Context.WIFI_SERVICE) as WifiManager?
         wifiManager?.let {
-            multicastLock?.let { multicastLock ->
-                multicastLock.release()
-            }
+            multicastLock?.release()
             multicastLock = null
             Log.d("${ConnectViewModel.TAG}/unlockMulticast", "Unlock multicast.")
         }
@@ -79,7 +77,7 @@ class UPnPDiscovery(private val context: Context) {
             }
 
             override fun onDevicesFound(devices: List<Device>) {
-                var uPnPDevices: List<UPnPDevice> = devices.map { device -> device as UPnPDevice }
+                val uPnPDevices: List<UPnPDevice> = devices.map { device -> device as UPnPDevice }
                 for (device in uPnPDevices) {
 
                     uPnPManager.getDeviceInformation(device, object : UPnPDeviceInformationListener {

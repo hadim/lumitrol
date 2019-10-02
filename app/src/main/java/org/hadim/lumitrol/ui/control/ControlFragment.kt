@@ -10,6 +10,7 @@ import android.widget.ProgressBar
 import androidx.lifecycle.Observer
 import butterknife.BindView
 import butterknife.OnClick
+import org.hadim.lumitrol.R
 import org.hadim.lumitrol.base.BaseFragment
 import org.hadim.lumitrol.network.stream.StreamPlayer
 import org.hadim.lumitrol.network.stream.StreamViewer
@@ -23,15 +24,15 @@ class ControlFragment : BaseFragment<ControlViewModel>() {
     }
 
     override val viewModelClass: Class<ControlViewModel> = ControlViewModel::class.java
-    override val layoutId: Int = org.hadim.lumitrol.R.layout.fragment_control
+    override val layoutId: Int = R.layout.fragment_control
 
-    @BindView(org.hadim.lumitrol.R.id.control_record_button)
+    @BindView(R.id.control_record_button)
     lateinit var recordButton: ImageButton
 
-    @BindView(org.hadim.lumitrol.R.id.stream_view)
+    @BindView(R.id.stream_view)
     lateinit var streamViewer: StreamViewer
 
-    @BindView(org.hadim.lumitrol.R.id.progress_bar_stream)
+    @BindView(R.id.progress_bar_stream)
     lateinit var progressBarStream: ProgressBar
 
     private var streamTimer: Timer? = null
@@ -57,7 +58,7 @@ class ControlFragment : BaseFragment<ControlViewModel>() {
         return view
     }
 
-    @OnClick(org.hadim.lumitrol.R.id.control_capture_button)
+    @OnClick(R.id.control_capture_button)
     fun captureButton() {
         Log.d("$TAG/captureButton", "clicked")
         viewModel.capture(onError = { error ->
@@ -65,7 +66,7 @@ class ControlFragment : BaseFragment<ControlViewModel>() {
         })
     }
 
-    @OnClick(org.hadim.lumitrol.R.id.control_record_button)
+    @OnClick(R.id.control_record_button)
     fun recordButton() {
         Log.d("$TAG/recordButton", "clicked")
         viewModel.record(onError = { error ->
@@ -87,9 +88,9 @@ class ControlFragment : BaseFragment<ControlViewModel>() {
 
         viewModel.isRecording.observe(this, Observer { isRecording ->
             if (viewModel.isRecording.value == false) {
-                recordButton.setImageResource(org.hadim.lumitrol.R.drawable.ic_videocam_black_24dp)
+                recordButton.setImageResource(R.drawable.ic_videocam_black_24dp)
             } else {
-                recordButton.setImageResource(org.hadim.lumitrol.R.drawable.ic_stop_black_24dp)
+                recordButton.setImageResource(R.drawable.ic_stop_black_24dp)
             }
         })
 
@@ -118,6 +119,8 @@ class ControlFragment : BaseFragment<ControlViewModel>() {
 
         val localUdpPort = 46995
         val ipAddress = viewModel.repository.ipAddress.value as String
+
+        viewModel.repository.autoreviewUnlock()
 
         // Send startstream command every 5 seconds to maintain streaming.
         streamTimer?.cancel()

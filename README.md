@@ -1,4 +1,5 @@
 # Lumitrol
+[![Build Status](https://travis-ci.com/hadim/lumitrol.svg?branch=master)](https://travis-ci.com/hadim/lumitrol)
 
 Control your Lumix camera from your phone or tablet. View and download images and **videos**.
 

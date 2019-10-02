@@ -266,4 +266,10 @@ class Repository(
         recmode()
         runCall(apiService?.stopStream(), null, null)
     }
+
+    fun autoreviewUnlock() {
+        Log.d("$TAG/capture", "")
+        // TODO: handle error.
+        runCall(apiService?.autoreviewUnlock(), null, null)
+    }
 }

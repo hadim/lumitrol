@@ -29,7 +29,7 @@ class StreamPlayer(
     private var socket: DatagramSocket? = null
     private val address: InetAddress = InetAddress.getByName(ipAddress)
 
-    private val imageExecutor = Executors.newFixedThreadPool(10)
+    private val imageExecutor = Executors.newSingleThreadScheduledExecutor()
 
     /*
      * TODO: design a more efficient way using Stream maybe?
@@ -42,7 +42,7 @@ class StreamPlayer(
         socket = null
         try {
             socket = DatagramSocket(udpPort)
-            socket?.soTimeout = 100
+            //socket?.soTimeout = 100
         } catch (error: Exception) {
             error.message?.let {
                 Log.e("$TAG/run", "Can't create the socket for streaming: ${error.message}")
@@ -52,31 +52,37 @@ class StreamPlayer(
 
         onLoading?.let { it() }
 
-        socket?.let {
-            // The camera sends each image in one UDP packet, normally between 25000 and 30000 bytes. We set 35000 here to be safe.
-            val udpPacketBuffer = ByteArray(35000)
+        socket?.let { socket ->
+
+            // The camera sends each image in one UDP packet, normally between 25000 and 30000 bytes.
+            // We set 35000 here to be safe.
+            var udpPacketBuffer: ByteArray = ByteArray(35000)
             var currentFrame: Bitmap?
 
-            val receivedPacket = DatagramPacket(
-                udpPacketBuffer, udpPacketBuffer.size,
-                address, udpPort
-            )
+            var receivedPacket: DatagramPacket? = null
 
+            currentFrame = null
             while (!Thread.interrupted()) {
                 try {
+
+                    receivedPacket = DatagramPacket(
+                        udpPacketBuffer, udpPacketBuffer.size,
+                        address, udpPort
+                    )
+
                     socket?.receive(receivedPacket)
 
                     // TODO: some lag happen. Maybe because of getImage being run
                     //  in the same thread as receive?
-                    currentFrame = getImage(receivedPacket)
 
                     imageExecutor.submit {
+                        currentFrame = getImage(receivedPacket)
                         currentFrame?.let { currentFrame ->
                             onStreaming?.let { it() }
                             imageConsumer(currentFrame)
                         }
-
                     }
+
                 } catch (error: Exception) {
                     error.message?.let { Log.e("$TAG/run", it) }
                     onLoading?.let { it() }

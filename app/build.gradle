@@ -69,6 +69,8 @@ dependencies {
         transitive = false
     }
 
+    implementation 'com.koushikdutta.async:androidasync:2.2.1'
+
     // Butterknife (@BindView)
     implementation 'com.jakewharton:butterknife:10.2.0'
     kapt 'com.jakewharton:butterknife-compiler:10.2.0'

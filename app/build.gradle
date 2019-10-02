@@ -8,7 +8,7 @@ android {
     buildToolsVersion "29.0.2"
     defaultConfig {
         applicationId "org.hadim.lumitrol"
-        minSdkVersion 27
+        minSdkVersion 25
         targetSdkVersion 29
         versionCode 4
         versionName "0.2.3-dev"

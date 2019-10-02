@@ -11,7 +11,7 @@ android {
         minSdkVersion 25
         targetSdkVersion 29
         versionCode 4
-        versionName "0.2.3-dev"
+        versionName "0.2.3"
         testInstrumentationRunner "org.hadim.lumitrol.LumitrolTestRunner"
     }
     buildTypes {

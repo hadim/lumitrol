@@ -18,17 +18,7 @@ android:
   components:
     - tools
     - platform-tools
-
-    # Build tools version
-    - build-tools-$ANDROID_BUILD_TOOLS_VERSION
-
-    # The SDK Version
-    - android-$ANDROID_API_LEVEL
-    - android-$EMULATOR_API_LEVEL
-
-    # For Google APIs
-    - addon-google_apis-google-$ANDROID_API_LEVEL
-    - addon-google_apis-google-$EMULATOR_API_LEVEL
+    - tools
 
     # Additional components
     - extra-google-m2repository

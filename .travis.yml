@@ -47,7 +47,6 @@ before_install:
   - yes | sdkmanager "build-tools;$ANDROID_BUILD_TOOLS_VERSION"
 
 before_script:
-  - echo no | android create avd --force -n test -t "android-"$EMULATOR_API_LEVEL --abi $ANDROID_ABI
   - echo no | avdmanager create avd -n test -k "system-images;android-$EMULATOR_API_LEVEL;google_apis;$ANDROID_ABI"
   - emulator -avd test -no-window &
   - android-wait-for-emulator

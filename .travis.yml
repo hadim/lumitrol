@@ -45,11 +45,6 @@ cache:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
 
-before_install:
-  - touch $HOME/.android/repositories.cfg
-  - yes | sdkmanager "platforms;android-${ANDROID_API_LEVEL}"
-  - yes | sdkmanager "build-tools;${ANDROID_BUILD_TOOLS_VERSION}"
-
 before_script:
   - echo no | android create avd -n test -t "android-${EMULATOR_API_LEVEL}" --abi ${ANDROID_ABI}
   - emulator -avd test -no-window &

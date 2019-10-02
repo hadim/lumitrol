@@ -12,7 +12,7 @@ android {
         targetSdkVersion 29
         versionCode 4
         versionName "0.2.3-dev"
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "org.hadim.lumitrol.LumitrolTestRunner"
     }
     buildTypes {
         release {

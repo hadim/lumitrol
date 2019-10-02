@@ -35,6 +35,20 @@ proguard/
 # Android Studio captures folder
 captures/
 
+# Eclipse
+.settings/
+bin/
+tmp/
+.metadata
+.classpath
+.project
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.loadpath
+
 # IntelliJ
 *.iml
 .idea/workspace.xml

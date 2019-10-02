@@ -20,6 +20,10 @@ android:
     - platform-tools
     - tools
 
+    - build-tools-$ANDROID_BUILD_TOOLS_VERSION
+    - android-EMULATOR_API_LEVEL
+    - android-ANDROID_API_LEVEL
+
     # Additional components
     - extra-google-m2repository
     - extra-android-m2repository
@@ -46,11 +50,11 @@ before_install:
   - yes | sdkmanager "platforms;android-${ANDROID_API_LEVEL}"
   - yes | sdkmanager "build-tools;${ANDROID_BUILD_TOOLS_VERSION}"
 
-#before_script:
-#  - echo no | android create avd -n test -t "android-${EMULATOR_API_LEVEL}" --abi ${ANDROID_ABI}
-#  - emulator -avd test -no-window &
-#  - android-wait-for-emulator
-#  - adb shell input keyevent 82 &
+before_script:
+  - echo no | android create avd -n test -t "android-${EMULATOR_API_LEVEL}" --abi ${ANDROID_ABI}
+  - emulator -avd test -no-window &
+  - android-wait-for-emulator
+  - adb shell input keyevent 82 &
 
 script:
   - ./gradlew clean build check

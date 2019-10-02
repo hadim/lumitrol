@@ -4,9 +4,9 @@ jdk: oraclejdk8
 
 env:
   global:
-    - EMULATOR_API_LEVEL=22
+    - EMULATOR_API_LEVEL=27
     - ANDROID_BUILD_TOOLS_VERSION=29.0.2
-    - ANDROID_ABI=armeabi-v7a  # or `x86`
+    - ANDROID_ABI=x86  # or `armeabi-v7a`
     - ADB_INSTALL_TIMEOUT=5  # minutes (2 minutes by default)
 
   matrix:

@@ -51,6 +51,9 @@ cache:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
 
+install:
+  - yes | sdkmanager --licenses
+
 before_script:
   - echo no | android create avd --force -n test -t "android-"$EMULATOR_API_LEVEL --abi $ANDROID_ABI
   - emulator -avd test -no-window &
@@ -58,4 +61,5 @@ before_script:
   - adb shell input keyevent 82 &
 
 script:
+  - ./gradlew build check
   - ./gradlew clean build connectedCheck

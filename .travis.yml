@@ -17,7 +17,7 @@ env:
     - API=25 ABI=x86
     - API=26 ABI=x86
     - API=27 ABI=x86
-    - API=28 ABI=x86_64
+    #- API=28 ABI=x86_64
     #- API=29 ABI=x86_64
 
 android:

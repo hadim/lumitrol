@@ -4,7 +4,7 @@ jdk: oraclejdk8
 
 env:
   global:
-    - ADB_INSTALL_TIMEOUT=8
+    - ADB_INSTALL_TIMEOUT=15
     - BUILD_TOOLS_VERSION=29.0.2
     - COMPILE_SDK_VERSION=29
     - EMU_FLAVOR=google_apis_playstore # Must be `android`, `google_apis` or `google_apis_playstore`

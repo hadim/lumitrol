@@ -7,7 +7,7 @@ env:
     - ADB_INSTALL_TIMEOUT=15
     - BUILD_TOOLS_VERSION=29.0.2
     - COMPILE_SDK_VERSION=29
-    - EMU_FLAVOR=google_apis  # Must be `android`, `google_apis` or `google_apis_playstore`
+    - EMU_FLAVOR=google_apis  # Must be `default`, `google_apis` or `google_apis_playstore`
     - ANDROID_HOME=/usr/local/android-sdk
     - TOOLS=${ANDROID_HOME}/tools
     - PATH=${ANDROID_HOME}:${ANDROID_HOME}/emulator:${TOOLS}:${TOOLS}/bin:${ANDROID_HOME}/platform-tools:${PATH}
@@ -43,8 +43,8 @@ install:
   - echo y | sdkmanager "system-images;android-$API;$EMU_FLAVOR;$ABI" >/dev/null  # Install our emulator
 
 before_script:
-  - echo no | avdmanager create avd --force -n test -k "system-images;android-$API;$EMU_FLAVOR;$ABI" -c 10M
-  - emulator -verbose -avd test -no-window -m 2048 &
+  - echo no | avdmanager create avd --force -n test -k "system-images;android-$API;$EMU_FLAVOR;$ABI"
+  - emulator -verbose -avd test -no-window &
   - travis_wait 30 android-wait-for-emulator
   - adb shell input keyevent 82 &
 

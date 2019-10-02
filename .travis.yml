@@ -44,7 +44,7 @@ install:
 
 before_script:
   - echo no | avdmanager create avd --force -n test -k "system-images;android-$API;$EMU_FLAVOR;$ABI"
-  - emulator -verbose -avd test -no-accel -no-window -no-audio -camera-back none -camera-front none &
+  - emulator -verbose -avd test -no-accel -no-window -no-audio -camera-back none -camera-front none -selinux permissive &
   - travis_wait 30 android-wait-for-emulator
   - adb shell input keyevent 82 &
 

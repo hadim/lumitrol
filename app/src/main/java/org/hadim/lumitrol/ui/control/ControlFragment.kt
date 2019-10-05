@@ -120,6 +120,7 @@ class ControlFragment : BaseFragment<ControlViewModel>() {
         val localUdpPort = 46995
         val ipAddress = viewModel.repository.ipAddress.value as String
 
+        viewModel.repository.recmode()
         viewModel.repository.autoreviewUnlock()
 
         // Send startstream command every 5 seconds to maintain streaming.

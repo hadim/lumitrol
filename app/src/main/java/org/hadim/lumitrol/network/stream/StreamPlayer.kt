@@ -42,7 +42,7 @@ class StreamPlayer(
         socket = null
         try {
             socket = DatagramSocket(udpPort)
-            //socket?.soTimeout = 100
+            socket?.soTimeout = 500
         } catch (error: Exception) {
             error.message?.let {
                 Log.e("$TAG/run", "Can't create the socket for streaming: ${error.message}")
@@ -72,19 +72,20 @@ class StreamPlayer(
 
                     socket.receive(receivedPacket)
 
-                    // TODO: some lag happen. Maybe because of getImage being run
-                    //  in the same thread as receive?
+                    // TODO: fix lag during streaming.
 
                     imageExecutor.submit {
+
                         currentFrame = getImage(receivedPacket)
+                        onStreaming?.let { it() }
+
                         currentFrame?.let { currentFrame ->
-                            onStreaming?.let { it() }
                             imageConsumer(currentFrame)
                         }
                     }
 
                 } catch (error: Exception) {
-                    error.message?.let { Log.e("$TAG/run", it) }
+                    error.let { Log.e("$TAG/run", it.toString()) }
                     onLoading?.let { it() }
                 }
             }

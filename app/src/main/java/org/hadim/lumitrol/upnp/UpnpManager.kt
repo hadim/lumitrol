@@ -28,12 +28,9 @@ class UpnpManager(var application: Application) : ServiceConnection, DefaultRegi
 
     var upnpService: AndroidUpnpService? = null
     var detectedDevice: Device<*, *, *>? = null
+    var onDeviceAddedCallback: ((device: RemoteDevice) -> Unit)? = null
 
-    init {
-        startUpnpService()
-    }
-
-    private fun startUpnpService() {
+    fun startUpnpService() {
         // Fix the logging integration between java.util.logging and Android internal logging
         org.seamless.util.logging.LoggingUtil.resetRootHandler(
             FixedAndroidLogHandler()
@@ -63,7 +60,7 @@ class UpnpManager(var application: Application) : ServiceConnection, DefaultRegi
 
         upnpService = service as AndroidUpnpService
 
-        Log.i("$TAG/onServiceConnected", upnpService.toString())
+        Log.d("$TAG/onServiceConnected", upnpService.toString())
 
         // Get ready for future device advertisements
         upnpService?.registry?.addListener(this)
@@ -73,7 +70,7 @@ class UpnpManager(var application: Application) : ServiceConnection, DefaultRegi
     }
 
     override fun onServiceDisconnected(className: ComponentName) {
-        Log.i("$TAG/onServiceDisconnected", className.toString())
+        Log.d("$TAG/onServiceDisconnected", className.toString())
         upnpService = null
     }
 
@@ -98,12 +95,19 @@ class UpnpManager(var application: Application) : ServiceConnection, DefaultRegi
                 Log.i("$TAG/deviceAdded", device.identity.descriptorURL.toString())
                 Log.i("$TAG/deviceAdded", device.identity.descriptorURL.host)
                 detectedDevice = device
+                onDeviceAddedCallback?.let {
+                    it(device)
+                }
             }
         }
     }
 
     override fun remoteDeviceRemoved(registry: Registry, device: RemoteDevice) {
         Log.i("$TAG/deviceRemoved", device.toString())
+    }
+
+    fun onDeviceAdded(onDeviceAddedCallback: (device: RemoteDevice) -> Unit) {
+        this.onDeviceAddedCallback = onDeviceAddedCallback
     }
 
 }

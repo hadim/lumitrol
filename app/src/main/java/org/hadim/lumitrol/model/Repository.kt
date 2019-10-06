@@ -30,7 +30,6 @@ class Repository(
 
     companion object {
         const val TAG: String = "Repository"
-        const val CHECK_ALIVE_PERIOD: Long = 2000  // ms
         const val IS_REACHABLE_TIMEOUT: Int = 1000  // ms
 
         // Singleton prevents multiple instances of database opening at the
@@ -57,7 +56,6 @@ class Repository(
 
     var wifiState: MutableLiveData<WifiState> = MutableLiveData(WifiState.Disabled)
     var ipAddress: MutableLiveData<String?> = MutableLiveData()
-    var isIpManual: MutableLiveData<Boolean> = MutableLiveData(false)
     var isIpReachable: MutableLiveData<Boolean> = MutableLiveData(false)
     var isCameraDetected: MutableLiveData<Boolean> = MutableLiveData(false)
     var cameraModelName: MutableLiveData<String?> = MutableLiveData()
@@ -66,17 +64,15 @@ class Repository(
     val networkFailure: MutableLiveData<String?> = MutableLiveData()
     val responseError: MutableLiveData<String?> = MutableLiveData()
 
-    private var checkAliveTimer: Timer = Timer()
-
     init {
         Log.d("$TAG/init", "Init Repository")
 
-        checkAlive()
-        //setupCheckAlive()
-
         upnpManager = UpnpManager(application)
+        upnpManager.onDeviceAdded { device ->
+            ipAddress.postValue(device.identity.descriptorURL.host)
+        }
 
-        Log.d("$TAG/init", upnpManager.toString())
+        checkAlive()
     }
 
     fun buildApiService(force: Boolean? = false) {
@@ -135,14 +131,6 @@ class Repository(
 
     }
 
-    private fun setupCheckAlive() {
-        checkAliveTimer.schedule(object : TimerTask() {
-            override fun run() {
-                checkAlive()
-            }
-        }, 0, CHECK_ALIVE_PERIOD)
-    }
-
     fun checkAlive() {
         checkWifiState()
         if (wifiState.value == WifiState.Connected) {
@@ -165,13 +153,6 @@ class Repository(
 //                    "\n\tCamera detected: ${isCameraDetected.value}"
 //            Log.d("$TAG/runCall", stateString)
 //        }
-    }
-
-    fun resetIpAddress() {
-        putValue(ipAddress, null)
-        putValue(isIpReachable, false)
-        putValue(isCameraDetected, false)
-        putValue(cameraModelName, null)
     }
 
     private fun checkCameraDetected() {
@@ -214,11 +195,14 @@ class Repository(
             if (wifiManager.isWifiEnabled) {
                 if (wifiManager.connectionInfo.bssid != null) {
                     putValue(wifiState, WifiState.Connected)
+                    upnpManager.startUpnpService()
                 } else {
                     putValue(wifiState, WifiState.EnabledNotConnected)
+                    upnpManager.destroy()
                 }
             } else {
                 putValue(wifiState, WifiState.Disabled)
+                upnpManager.destroy()
             }
         }
     }

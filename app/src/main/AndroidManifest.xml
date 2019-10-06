@@ -39,6 +39,8 @@
             android:name="org.apache.http.legacy"
             android:required="false" />
 
+        <service android:name=".upnp.CameraUpnpService" />
+
     </application>
 
 </manifest>

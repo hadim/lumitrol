@@ -20,7 +20,6 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import butterknife.BindView
 import com.google.android.material.navigation.NavigationView
-import org.hadim.lumitrol.R
 import org.hadim.lumitrol.base.BaseActivity
 import org.hadim.lumitrol.model.Repository
 
@@ -32,17 +31,17 @@ class MainActivity : BaseActivity<MainActivityViewModel>() {
     }
 
     override val viewModelClass: Class<MainActivityViewModel> = MainActivityViewModel::class.java
-    override val layoutId: Int = R.layout.activity_main
+    override val layoutId: Int = org.hadim.lumitrol.R.layout.activity_main
 
     private lateinit var repository: Repository
 
-    @BindView(R.id.toolbar)
+    @BindView(org.hadim.lumitrol.R.id.toolbar)
     lateinit var toolbar: Toolbar
 
-    @BindView(R.id.drawer_layout)
+    @BindView(org.hadim.lumitrol.R.id.drawer_layout)
     lateinit var drawerLayout: DrawerLayout
 
-    @BindView(R.id.nav_view)
+    @BindView(org.hadim.lumitrol.R.id.nav_view)
     lateinit var navView: NavigationView
 
     private lateinit var appBarConfiguration: AppBarConfiguration
@@ -60,19 +59,19 @@ class MainActivity : BaseActivity<MainActivityViewModel>() {
 
             // Populate navigation menu
             val topLevelDestinationIds = setOf(
-                R.id.nav_connect,
-                R.id.nav_control,
-                R.id.nav_gallery
+                org.hadim.lumitrol.R.id.nav_connect,
+                org.hadim.lumitrol.R.id.nav_control,
+                org.hadim.lumitrol.R.id.nav_gallery
             )
             appBarConfiguration = AppBarConfiguration(topLevelDestinationIds, drawerLayout)
 
             // Setup navigation
-            val navController = findNavController(this, R.id.nav_host_fragment)
+            val navController = findNavController(this, org.hadim.lumitrol.R.id.nav_host_fragment)
             setupActionBarWithNavController(navController, appBarConfiguration)
             navView.setupWithNavController(navController)
 
             val headerView = navView.getHeaderView(0)
-            val versionTextView = headerView.findViewById(R.id.version_text) as TextView
+            val versionTextView = headerView.findViewById(org.hadim.lumitrol.R.id.version_text) as TextView
             versionTextView.text = getVersionName()
         }
 
@@ -82,8 +81,13 @@ class MainActivity : BaseActivity<MainActivityViewModel>() {
         Log.d("$TAG/onCreate", "Init MainActivity")
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        repository.upnpManager.destroy()
+    }
+
     override fun onSupportNavigateUp(): Boolean {
-        val navController = findNavController(this, R.id.nav_host_fragment)
+        val navController = findNavController(this, org.hadim.lumitrol.R.id.nav_host_fragment)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 

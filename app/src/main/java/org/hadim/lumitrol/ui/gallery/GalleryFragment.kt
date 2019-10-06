@@ -38,10 +38,15 @@ class GalleryFragment : BaseFragment<GalleryViewModel>() {
         viewModel.repository.isCameraDetected.observe(this, Observer { isCameraDetected ->
             if (isCameraDetected == true) {
                 enableFragment()
+                populateGallery()
             } else {
                 disableFragment()
             }
         })
 
+    }
+
+    private fun populateGallery() {
+        viewModel.getGallery()
     }
 }

@@ -26,6 +26,9 @@ android {
     compileOptions {
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    packagingOptions {
+        exclude 'META-INF/beans.xml'
+    }
 }
 
 dependencies {
@@ -69,7 +72,14 @@ dependencies {
         transitive = false
     }
 
-    implementation 'com.koushikdutta.async:androidasync:2.2.1'
+    // cling: uPnP library
+    implementation 'org.fourthline.cling:cling-core:2.1.2-SNAPSHOT'
+    implementation 'org.fourthline.cling:cling-support:2.1.2-SNAPSHOT'
+
+    // jetty: cling dependency
+    implementation 'org.eclipse.jetty:jetty-server:8.1.22.v20160922'
+    implementation 'org.eclipse.jetty:jetty-servlet:8.1.22.v20160922'
+    implementation 'org.eclipse.jetty:jetty-client:8.1.22.v20160922'
 
     // Butterknife (@BindView)
     implementation 'com.jakewharton:butterknife:10.2.0'

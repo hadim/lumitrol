@@ -44,16 +44,16 @@ class ConnectViewModel(
         discovery = UPnPDiscovery(context)
         discovery?.let { discovery ->
             discovery.discoverManufacturer("Panasonic") { device ->
-                Log.d("${ConnectFragment.TAG}/automaticConnection", "Devices found: ${device.hostName}")
-                Log.d("${ConnectFragment.TAG}/automaticConnection", "Devices found: ${device.location}")
-                Log.d("${ConnectFragment.TAG}/automaticConnection", "Devices found: ${device.header}")
-                Log.d("${ConnectFragment.TAG}/automaticConnection", "Devices found: ${device.server}")
-                Log.d("${ConnectFragment.TAG}/automaticConnection", "Devices found: ${device.usn}")
-                Log.d("${ConnectFragment.TAG}/automaticConnection", "Devices found: ${device.deviceInformation.friendlyName}")
-                Log.d("${ConnectFragment.TAG}/automaticConnection", "Devices found: ${device.deviceInformation.manufacturer}")
-                Log.d("${ConnectFragment.TAG}/automaticConnection", "Devices found: ${device.deviceInformation.modelDescription}")
-                Log.d("${ConnectFragment.TAG}/automaticConnection", "Devices found: ${device.deviceInformation.modelName}")
-                Log.d("${ConnectFragment.TAG}/automaticConnection", "Devices found: ${device.deviceInformation.deviceType}")
+                Log.d("$TAG/automaticConnection", "Devices found: ${device.hostName}")
+                Log.d("$TAG/automaticConnection", "Devices found: ${device.location}")
+                Log.d("$TAG/automaticConnection", "Devices found: ${device.header}")
+                Log.d("$TAG/automaticConnection", "Devices found: ${device.server}")
+                Log.d("$TAG/automaticConnection", "Devices found: ${device.usn}")
+                Log.d("$TAG/automaticConnection", "Devices found: ${device.deviceInformation.friendlyName}")
+                Log.d("$TAG/automaticConnection", "Devices found: ${device.deviceInformation.manufacturer}")
+                Log.d("$TAG/automaticConnection", "Devices found: ${device.deviceInformation.modelDescription}")
+                Log.d("$TAG/automaticConnection", "Devices found: ${device.deviceInformation.modelName}")
+                Log.d("$TAG/automaticConnection", "Devices found: ${device.deviceInformation.deviceType}")
 
                 stopAutomaticConnection()
 

@@ -11,6 +11,7 @@ import org.hadim.lumitrol.model.api.ApiResponse
 import org.hadim.lumitrol.model.api.ApiResponseCapability
 import org.hadim.lumitrol.model.api.ApiService
 import org.hadim.lumitrol.model.api.ApiServiceFactory
+import org.hadim.lumitrol.upnp.UpnpManager
 import retrofit2.Call
 import java.util.*
 import kotlin.concurrent.schedule
@@ -51,6 +52,7 @@ class Repository(
         }
     }
 
+    var upnpManager: UpnpManager
     private var apiService: ApiService? = null
 
     var wifiState: MutableLiveData<WifiState> = MutableLiveData(WifiState.Disabled)
@@ -71,6 +73,10 @@ class Repository(
 
         checkAlive()
         //setupCheckAlive()
+
+        upnpManager = UpnpManager(application)
+
+        Log.d("$TAG/init", upnpManager.toString())
     }
 
     fun buildApiService(force: Boolean? = false) {

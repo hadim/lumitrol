@@ -6,6 +6,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
 import org.hadim.lumitrol.model.Repository
 
+
 abstract class BaseViewModel(
     application: Application,
     val savedStateHandle: SavedStateHandle
@@ -13,5 +14,4 @@ abstract class BaseViewModel(
 
     var repository: Repository = Repository.getRepository(application)
     var context: Context = application.applicationContext
-
 }

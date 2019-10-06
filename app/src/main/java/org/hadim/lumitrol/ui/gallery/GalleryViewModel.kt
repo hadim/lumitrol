@@ -22,4 +22,11 @@ class GalleryViewModel(
     fun enablePlayMode() {
         repository.playmode()
     }
+
+    fun getGallery() {
+        Log.d("$TAG/getGallery", "dddddddddd")
+
+        Log.d("$TAG/getGallery", repository.upnpManager.toString())
+    }
+
 }
